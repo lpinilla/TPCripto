@@ -1,0 +1,4 @@
+[submodule "Tasteful"]
+	path = Tasteful
+	url = https://github.com/lpinilla/Tasteful
+	branch = master
