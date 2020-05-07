@@ -3,20 +3,21 @@ CFLAGS = -g -pthread -std=c99 --pedantic -Werror -Wno-implicit-fallthrough -Wall
 
 DEPS= $(wildcard includes/*.h)
 SRC= $(wildcard *.c)
-OBJ= $(addprefix .objs/, $(SRC:.c=.o))
+#OBJ= $(addprefix .objs/, $(SRC:.c=.o))
+OBJ=  $(SRC:.c=.o)
 
 TARGET= stegobmp
 
-$(TARGET): $(OBJ) $(DEPS)
-	$(CC) $(CFLAGS) -o $@ $<
+$(TARGET): $(addprefix .objs/,$(OBJ)) $(DEPS)
+	$(CC) $(CFLAGS) -o $@ $(addprefix .objs/, $(OBJ))
 	@echo "\e[36m[src compiled]\e[0m"
 
-$(OBJ): $(SRC)
+.objs/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
-	@echo "\e[32mCompiled object files \e[0m $@"
+	@echo "\e[32mCompiled object file \e[0m $@"
 
 clean:
-	-@rm -rf $(TARGET) .objs/*.o *.out
+	-@rm -rf $(TARGET) .objs/*.o *.o *.out
 	@echo "\e[36m[src cleaned]\e[0m"
 
 format:
