@@ -1,24 +1,22 @@
 #include <lsb.h>
 #include <payload.h>
-#include <stdlib.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define BYTE_SIZE 8
 
-lsb create_lsb(int n, uint8_t * carrier, uint8_t size){
-    lsb l = (lsb) malloc(sizeof(t_lsb));
-    l->n = n;
-    l->carrier = carrier;
-    l->size = size;
-    l->counter = 0;
-    l->mask = (1 << l->n) - 1;
-    return l;
+lsb create_lsb(int n, uint8_t* carrier, uint8_t size) {
+  lsb l = (lsb)malloc(sizeof(t_lsb));
+  l->n = n;
+  l->carrier = carrier;
+  l->size = size;
+  l->counter = 0;
+  l->mask = (1 << l->n) - 1;
+  return l;
 }
 
-void destroy_lsb(lsb l){
-    free(l);
-}
+void destroy_lsb(lsb l) { free(l); }
 
 /*
  * Función para inyectar bits en un byte del archivo portador. Para
@@ -32,10 +30,9 @@ void destroy_lsb(lsb l){
  * de la máscara con los bits ya utilizados.
  */
 
-void inject_bit(lsb l,uint8_t i_byte, int bits_used){
-    if(l == NULL) return;
-    uint8_t carrier_byte = l->carrier[l->counter];
-     l->carrier[l->counter] =
-         (i_byte & (l->mask << bits_used)) ^
-         ((carrier_byte & l->mask) ^ carrier_byte);
+void inject_bit(lsb l, uint8_t i_byte, int bits_used) {
+  if (l == NULL) return;
+  uint8_t carrier_byte = l->carrier[l->counter];
+  l->carrier[l->counter] = (i_byte & (l->mask << bits_used)) ^
+                           ((carrier_byte & l->mask) ^ carrier_byte);
 }
