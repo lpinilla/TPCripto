@@ -7,6 +7,9 @@
 *.obj
 *.elf
 
+# Tasteful files
+*.tasty
+
 # Linker output
 *.ilk
 *.map
