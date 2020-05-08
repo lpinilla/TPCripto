@@ -15,9 +15,10 @@ src:
 	@cd ../src/; make --no-print-directory; cd ../tests;
 
 #generar los ejecutables de las suites
-$(TEST_SRC:.c=.tasty): .objs/$(OBJ)
+#$(TEST_SRC:.c=.tasty): .objs/$(OBJ)
+%.tasty: .objs/%.o
 	@echo "\e[34mCompiling\e[0m $^"
-	$(CC) $(CFLAGS) -o $@ .objs/$(OBJ) ../Tasteful/$(LIB) $(SOURCES) $(CLIBRARIES)
+	$(CC) $(CFLAGS) -o $@ $< ../Tasteful/$(LIB) $(SOURCES) $(CLIBRARIES)
 	@echo "\e[32mCompiled\e[0m $@"
 
 #armar los .o de los .tasty
