@@ -1,5 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -pedantic -std=c99 -I ../src/includes/ -I ../Tasteful -pthread -Wno-nonnull-compare
+CLIBRARIES = -lssl -lcrypto
 LIB = testing_suite.c
 SOURCES = $(filter-out ../src/main.c, $(wildcard ../src/*.c))
 FW = tasteful
@@ -16,7 +17,7 @@ src:
 #generar los ejecutables de las suites
 $(TEST_SRC:.c=.tasty): .objs/$(OBJ)
 	@echo "\e[34mCompiling\e[0m $^"
-	$(CC) $(CFLAGS) -o $@ .objs/$(OBJ) ../Tasteful/$(LIB) $(SOURCES)
+	$(CC) $(CFLAGS) -o $@ .objs/$(OBJ) ../Tasteful/$(LIB) $(SOURCES) $(CLIBRARIES)
 	@echo "\e[32mCompiled\e[0m $@"
 
 #armar los .o de los .tasty
