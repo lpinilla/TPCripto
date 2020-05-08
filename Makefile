@@ -11,7 +11,7 @@ clean:
 	@cd src; make --no-print-directory clean
 	@cd tests; make --no-print-directory clean
 	@#@cd Tasteful; make --no-print-directory clean
-	@cd bin; rm -rf *
+	@rm -rf bin/*
 	-@rm -rf *.out
 	@echo "\e[34m[everything cleaned]\e[0m"
 
