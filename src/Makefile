@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS = -g -pthread -std=c99 --pedantic -Werror -Wno-implicit-fallthrough -Wall -I includes/ -O2 -pipe -D_FORTIFY_SOURCE=2 -Wno-nonnull-compare -Wextra -D_POSIX_C_SOURCE=200112L
-
+CFLAGS = -g -pthread -std=c99 --pedantic -Werror -Wno-implicit-fallthrough -Wall -I includes/ -O2 -pipe -D_FORTIFY_SOURCE=2 -Wno-nonnull-compare -Wextra -D_POSIX_C_SOURCE=200112L 
+CLIBRARIES = -lssl -lcrypto
 DEPS= $(wildcard includes/*.h)
 SRC= $(wildcard *.c)
 #OBJ= $(addprefix .objs/, $(SRC:.c=.o))
@@ -9,7 +9,7 @@ OBJ=  $(SRC:.c=.o)
 TARGET= stegobmp
 
 $(TARGET): $(addprefix .objs/,$(OBJ)) $(DEPS)
-	$(CC) $(CFLAGS) -o $@ $(addprefix .objs/, $(OBJ))
+	$(CC) $(CFLAGS) -o $@ $(addprefix .objs/, $(OBJ)) $(CLIBRARIES) 
 	@echo "\e[36m[src compiled]\e[0m"
 
 .objs/%.o: %.c
