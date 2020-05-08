@@ -11,16 +11,19 @@
  */
 
 typedef struct t_payload{
-    uint8_t ** content; //puntero a el mensaje a inyectar como array de bytes
+    uint8_t * content; //puntero a el mensaje a inyectar como array de bytes
     uint8_t counter; //índice del byte actual en el array
     long size; //tamaño del array
     int bits_used; //cuantos bits ya procesamos del byte actual
-    long inserted; //contador de cuantos bytes ya insertamos
-    int completed; //flag para ver si ya se escribió todo
+    //int completed; //flag para ver si ya se escribió todo
 
 } t_payload;
 
 typedef t_payload * payload;
+
+payload create_payload(uint8_t * content, long size);
+
+void destroy_payload(payload p);
 
 uint8_t get_next_byte(payload p);
 

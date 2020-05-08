@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define BYTE_SIZE 8
 
@@ -14,7 +15,8 @@ lsb create_lsb(int n, uint8_t* carrier, long size, long p_w, long p_h) {
   l->pixel_width = p_w;
   l->pixel_height = p_h;
   l->counter = 0;
-  l->mask = (1 << l->n) - 1;
+  l->c_mask = (n == 1)? 0x1: 0x3;
+  l->i_mask = l->c_mask << (int) (  (BYTE_SIZE / 2) - ceil(l->n / 2.0));
   return l;
 }
 
@@ -35,16 +37,20 @@ void destroy_lsb(lsb l) { free(l); }
 void inject_bit(lsb l, uint8_t i_byte, int bits_used) {
   if (l == NULL) return;
   uint8_t carrier_byte = l->carrier[l->counter];
-  l->carrier[l->counter] = (i_byte & (l->mask << bits_used)) ^
-                           ((carrier_byte & l->mask) ^ carrier_byte);
+  //printf("carrier byte %d \n", carrier_byte);
+  //printf("i_byte %d %d %d %d \n", i_byte, l->i_mask, bits_used, i_byte & (l->i_mask << bits_used));
+  //printf("cuenta %d \n", (carrier_byte & l->c_mask) ^ carrier_byte);
+  //printf("cuenta_2 %d \n", (i_byte & (l->i_mask >> bits_used)) ^
+  //                         ((carrier_byte & l->c_mask) ^ carrier_byte));
+  l->carrier[l->counter++] = (i_byte & (l->i_mask >> bits_used)) ^
+                           ((carrier_byte & l->c_mask) ^ carrier_byte);
 }
 
-//función que va inyectar los bits sobre cada "fila" de la imagen
-void lsb_steg(lsb l, payload p){
-    if(l == NULL || p == NULL) return;
-    uint8_t i_byte = get_next_byte(p);
-    int bits_used = 0;
-    for(int i = 0; i < l->pixel_width; i++){
+//función que va inyectar los bits en n píxeles sobre cada "fila" de la imagen
+void worker_lsb_steg(lsb l, payload p, long n_of_pixels){
+    if(l == NULL || p == NULL || n_of_pixels == 0) return;
+    uint8_t i_byte = get_next_byte(p), bits_used = 0;
+    for(int i = 0; i < n_of_pixels; i++){
         inject_bit(l, i_byte, bits_used);
         bits_used += l->n;
         if(bits_used == 8){

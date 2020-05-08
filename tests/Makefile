@@ -18,13 +18,13 @@ src:
 #$(TEST_SRC:.c=.tasty): .objs/$(OBJ)
 %.tasty: .objs/%.o
 	@echo "\e[34mCompiling\e[0m $^"
-	$(CC) $(CFLAGS) -o $@ $< ../Tasteful/$(LIB) $(SOURCES) $(CLIBRARIES)
+	$(CC) $(CFLAGS) -o $@ $< ../Tasteful/$(LIB) $(SOURCES) $(CLIBRARIES) -lm
 	@echo "\e[32mCompiled\e[0m $@"
 
 #armar los .o de los .tasty
 .objs/%.o: %.c
 	@echo "\e[34mCompiling object files of the tests\e[0m $@"
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $< -lm
 	#mv *.o .objs/
 
 $(FW):

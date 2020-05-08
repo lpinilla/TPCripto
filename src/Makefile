@@ -9,11 +9,11 @@ OBJ=  $(SRC:.c=.o)
 TARGET= stegobmp
 
 $(TARGET): $(addprefix .objs/,$(OBJ)) $(DEPS)
-	$(CC) $(CFLAGS) -o $@ $(addprefix .objs/, $(OBJ)) $(CLIBRARIES) 
+	$(CC) $(CFLAGS) -o $@ $(addprefix .objs/, $(OBJ)) $(CLIBRARIES) -lm
 	@echo "\e[36m[src compiled]\e[0m"
 
 .objs/%.o: %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $< -lm
 	@echo "\e[32mCompiled object file \e[0m $@"
 
 clean:

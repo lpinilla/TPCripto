@@ -11,7 +11,8 @@ typedef struct t_lsb{
     long c_size; //tamaño total en bytes del archivo portador
     long pixel_width; //cantidad de pixels de largo (columnas)
     long pixel_height; //cantidad de pixels de alto (filas)
-    uint8_t mask; //máscara de 8 bits que se va a aplicar para extraer los n bits de acuerdo a los alg
+    uint8_t c_mask; //máscara a aplicar a el byte del archivo contenedor para calcular I.
+    uint8_t i_mask; //máscara a aplicar al byte a inyectar para saber qué bits usar.
 } t_lsb;
 
 typedef t_lsb * lsb;
@@ -26,6 +27,6 @@ int payload_fit_test(long carrier_size, long payload_size);
 void inject_bit(lsb l, uint8_t i_byte, int bits_used);
 
 //función para realizar la steganografía
-void lbs_steg(lsb l, payload p);
+void worker_lsb_steg(lsb l, payload p, long n_of_pixels);
 
 #endif
