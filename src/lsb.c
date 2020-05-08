@@ -42,8 +42,9 @@ void inject_bit(lsb l, uint8_t i_byte, int bits_used) {
   //printf("cuenta %d \n", (carrier_byte & l->c_mask) ^ carrier_byte);
   //printf("cuenta_2 %d \n", (i_byte & (l->i_mask >> bits_used)) ^
   //                         ((carrier_byte & l->c_mask) ^ carrier_byte));
-  l->carrier[l->counter++] = (i_byte & (l->i_mask >> bits_used)) ^
-                           ((carrier_byte & l->c_mask) ^ carrier_byte);
+  l->carrier[l->counter++] = ((i_byte & (l->i_mask >> bits_used))
+          >> ((BYTE_SIZE / 2) - ( bits_used + 1)) ) ^
+      ((carrier_byte & l->c_mask) ^ carrier_byte);
 }
 
 //función que va inyectar los bits en n píxeles sobre cada "fila" de la imagen

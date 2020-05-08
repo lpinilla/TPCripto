@@ -15,6 +15,12 @@ void injection_test_5();
 void injection_test_6();
 void injection_test_7();
 void injection_test_8();
+void injection_test_9();
+void injection_test_10();
+void injection_test_11();
+void injection_test_12();
+void injection_test_13();
+void injection_test_14();
 void worker_lbs_steg_test_1();
 
 int main() {
@@ -29,6 +35,12 @@ int main() {
   add_test(injection_test_6);
   add_test(injection_test_7);
   add_test(injection_test_8);
+  add_test(injection_test_9);
+  add_test(injection_test_10);
+  add_test(injection_test_11);
+  add_test(injection_test_12);
+  add_test(injection_test_13);
+  add_test(injection_test_14);
   add_test(worker_lbs_steg_test_1);
   run_suite();
   clear_suite();
@@ -170,18 +182,111 @@ void injection_test_8() {
   assert_true(ret == size);
 }
 
+void injection_test_9() {
+  int size = 4, ret = 0;
+  uint8_t original_bit = 0, injection = 0xa; //a = 1010
+  uint8_t carrier[size];
+  carrier[0] = original_bit;
+  for(int i = 0; i < size; i++) carrier[i] = original_bit;
+  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  ret += carrier[0] == 1;
+  ret += carrier[1] == 0;
+  ret += carrier[2] == 1;
+  ret += carrier[3] == 0;
+  destroy_lsb(l1);
+  assert_true(ret == size);
+}
+
+void injection_test_10() {
+  int size = 4, ret = 0;
+  uint8_t original_bit = 1, injection = 0xa; //a = 1010
+  uint8_t carrier[size];
+  carrier[0] = original_bit;
+  for(int i = 0; i < size; i++) carrier[i] = original_bit;
+  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  ret += carrier[0] == 1;
+  ret += carrier[1] == 0;
+  ret += carrier[2] == 1;
+  ret += carrier[3] == 0;
+  destroy_lsb(l1);
+  assert_true(ret == size);
+}
+
+void injection_test_11() {
+  int size = 4, ret = 0;
+  uint8_t original_bit = 0, injection = 0xe; //a = 1010
+  uint8_t carrier[size];
+  carrier[0] = original_bit;
+  for(int i = 0; i < size; i++) carrier[i] = original_bit;
+  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  ret += carrier[0] == 1;
+  ret += carrier[1] == 1;
+  ret += carrier[2] == 1;
+  ret += carrier[3] == 0;
+  destroy_lsb(l1);
+  assert_true(ret == size);
+}
+
+void injection_test_12() {
+  int size = 4, ret = 0;
+  uint8_t original_bit = 1, injection = 0xe; //a = 1010
+  uint8_t carrier[size];
+  carrier[0] = original_bit;
+  for(int i = 0; i < size; i++) carrier[i] = original_bit;
+  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  ret += carrier[0] == 1;
+  ret += carrier[1] == 1;
+  ret += carrier[2] == 1;
+  ret += carrier[3] == 0;
+  destroy_lsb(l1);
+  assert_true(ret == size);
+}
+
+void injection_test_13() {
+  int size = 4, ret = 0;
+  uint8_t injection = 0x2;
+  uint8_t carrier[size];
+  //byte original: 0101
+  carrier[0] = carrier[2] =  0;
+  carrier[1] = carrier[3] = 1;
+  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  ret += carrier[0] == 0;
+  ret += carrier[1] == 0;
+  ret += carrier[2] == 1;
+  ret += carrier[3] == 0;
+  destroy_lsb(l1);
+  assert_true(ret == size);
+}
+
+void injection_test_14() {
+  int size = 4, ret = 0;
+  uint8_t injection = 0xF;
+  uint8_t carrier[size];
+  //byte original: 1101
+  carrier[0] = carrier[1] = carrier[3] =  1;
+  carrier[2] = 0;
+  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  ret += carrier[0] == 1;
+  ret += carrier[1] == 1;
+  ret += carrier[2] == 1;
+  ret += carrier[3] == 1;
+  destroy_lsb(l1);
+  assert_true(ret == size);
+}
+
 void worker_lbs_steg_test_1(){
     int size = 4;
     uint8_t carrier[size], content = 0xa; // bits 1010
     for(int i = 0; i < size; i++) carrier[i] = 0;
-    //printf("%d \n", content);
     payload p = create_payload(&content, sizeof(content));
     lsb l = create_lsb(1, carrier, size, size, 1);
     worker_lsb_steg(l, p, size);
-    for(int i = 0; i < size; i++){
-        //printf("%d \n", carrier[i]);
-        //printf("%d \n", carrier[i] == (content & 1 << (size - i)) );
-    }
     destroy_lsb(l);
     destroy_payload(p);
 }
