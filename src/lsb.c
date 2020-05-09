@@ -15,8 +15,9 @@ lsb create_lsb(int n, uint8_t* carrier, long size, long p_w, long p_h) {
   l->pixel_width = p_w;
   l->pixel_height = p_h;
   l->counter = 0;
+  l->shift_val = (int) (  (BYTE_SIZE / 2) - ceil(l->n / 2.0));
   l->c_mask = (n == 1)? 0x1: 0x3;
-  l->i_mask = l->c_mask << (int) (  (BYTE_SIZE / 2) - ceil(l->n / 2.0));
+  l->i_mask = l->c_mask << l->shift_val;
   return l;
 }
 
@@ -37,13 +38,17 @@ void destroy_lsb(lsb l) { free(l); }
 void inject_bit(lsb l, uint8_t i_byte, int bits_used) {
   if (l == NULL) return;
   uint8_t carrier_byte = l->carrier[l->counter];
-  //printf("carrier byte %d \n", carrier_byte);
-  //printf("i_byte %d %d %d %d \n", i_byte, l->i_mask, bits_used, i_byte & (l->i_mask << bits_used));
-  //printf("cuenta %d \n", (carrier_byte & l->c_mask) ^ carrier_byte);
-  //printf("cuenta_2 %d \n", (i_byte & (l->i_mask >> bits_used)) ^
-  //                         ((carrier_byte & l->c_mask) ^ carrier_byte));
-  l->carrier[l->counter++] = ((i_byte & (l->i_mask >> bits_used))
-          >> ((BYTE_SIZE / 2) - ( bits_used + 1)) ) ^
+
+   //printf("carrier byte %d \n", carrier_byte);
+ // printf("i_byte %d %d %d %d \n", i_byte, l->i_mask >> bits_used, bits_used, ( (i_byte & (l->i_mask >> bits_used)) << bits_used  ));
+ // printf("cuenta %d \n", ( (i_byte & (l->i_mask >> bits_used)) >> (4 - l->shift_val + bits_used)   ));
+  /*printf("cuenta_2 %d \n",
+            ((i_byte & (l->i_mask >> bits_used))
+            >> ((BYTE_SIZE / 2) - ( bits_used + 1)) ) ^
+            ((carrier_byte & l->c_mask) ^ carrier_byte));*/
+
+ l->carrier[l->counter++] =
+      ((i_byte & (l->i_mask >> bits_used)) >> (l->shift_val -bits_used)) ^
       ((carrier_byte & l->c_mask) ^ carrier_byte);
 }
 

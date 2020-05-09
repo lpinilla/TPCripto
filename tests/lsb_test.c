@@ -21,6 +21,11 @@ void injection_test_11();
 void injection_test_12();
 void injection_test_13();
 void injection_test_14();
+void injection_test_15();
+void injection_test_16();
+void injection_test_17();
+void injection_test_18();
+void injection_test_19();
 void worker_lbs_steg_test_1();
 
 int main() {
@@ -41,6 +46,11 @@ int main() {
   add_test(injection_test_12);
   add_test(injection_test_13);
   add_test(injection_test_14);
+  add_test(injection_test_15);
+  add_test(injection_test_16);
+  add_test(injection_test_17);
+  add_test(injection_test_18);
+  add_test(injection_test_19);
   add_test(worker_lbs_steg_test_1);
   run_suite();
   clear_suite();
@@ -56,9 +66,10 @@ void lsb_creation_test_1() {
   asserts += l->c_size == 8;
   asserts += l->pixel_width == size / 2;
   asserts += l->pixel_height == size / 2;
+  asserts += l->shift_val == 3;
   asserts += l->c_mask == 0x1;
   asserts += l->i_mask == 0x8;
-  assert_true(asserts == 8);
+  assert_true(asserts == 9);
 }
 
 void lsb_creation_test_4() {
@@ -71,10 +82,11 @@ void lsb_creation_test_4() {
   asserts += l->c_size == 8;
   asserts += l->pixel_width == size / 2;
   asserts += l->pixel_height == size / 2;
+  asserts += l->shift_val == 2;
   asserts += l->c_mask == 0x3;
   asserts += l->i_mask == 0xc;
   destroy_lsb(l);
-  assert_true(asserts == 8);
+  assert_true(asserts == 9);
 }
 
 
@@ -83,10 +95,10 @@ void injection_test_1() {
   uint8_t original_bit = 0, injection = 0;
   uint8_t carrier[size];
   carrier[0] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  inject_bit(l1, injection, 3);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  inject_bit(l, injection, 3);
   ret += carrier[0] == injection;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -95,10 +107,10 @@ void injection_test_2() {
   uint8_t original_bit = 0, injection = 1;
   uint8_t carrier[size];
   carrier[0] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, 1, 0);
-  inject_bit(l1, injection, 3);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, 1, 0);
+  inject_bit(l, injection, 3);
   ret += carrier[0] == injection;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -107,10 +119,10 @@ void injection_test_3() {
   uint8_t original_bit = 1, injection = 0;
   uint8_t carrier[size];
   carrier[0] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, 1, 0);
-  inject_bit(l1, injection, 3);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, 1, 0);
+  inject_bit(l, injection, 3);
   ret += carrier[0] == injection;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -119,10 +131,10 @@ void injection_test_4() {
   uint8_t original_bit = 1, injection = 1;
   uint8_t carrier[size];
   carrier[0] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, 1, 0);
-  inject_bit(l1, injection, 3);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, 1, 0);
+  inject_bit(l, injection, 3);
   ret += carrier[0] == injection;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -132,11 +144,11 @@ void injection_test_5() {
   uint8_t carrier[size];
   carrier[0] = original_bit;
   for(int i = 0; i < size; i++) carrier[i] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   for(int i = 0; i < (size -1); i++) ret += carrier[i] == original_bit;
   ret += carrier[size-1] == injection;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -146,11 +158,11 @@ void injection_test_6() {
   uint8_t carrier[size];
   carrier[0] = original_bit;
   for(int i = 0; i < size; i++) carrier[i] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   for(int i = 0; i < (size -1); i++) ret += carrier[i] == original_bit;
   ret += carrier[size-1] == injection;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -160,11 +172,11 @@ void injection_test_7() {
   uint8_t carrier[size];
   carrier[0] = original_bit;
   for(int i = 0; i < size; i++) carrier[i] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   for(int i = 0; i < (size -1); i++) ret += carrier[i] == injection; //caso especial
   ret += carrier[size-1] == injection;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -174,11 +186,11 @@ void injection_test_8() {
   uint8_t carrier[size];
   carrier[0] = original_bit;
   for(int i = 0; i < size; i++) carrier[i] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   for(int i = 0; i < (size -1); i++) ret += carrier[i] == 0; //caso especial
   ret += carrier[size-1] == injection;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -188,13 +200,13 @@ void injection_test_9() {
   uint8_t carrier[size];
   carrier[0] = original_bit;
   for(int i = 0; i < size; i++) carrier[i] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   ret += carrier[0] == 1;
   ret += carrier[1] == 0;
   ret += carrier[2] == 1;
   ret += carrier[3] == 0;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -204,13 +216,13 @@ void injection_test_10() {
   uint8_t carrier[size];
   carrier[0] = original_bit;
   for(int i = 0; i < size; i++) carrier[i] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   ret += carrier[0] == 1;
   ret += carrier[1] == 0;
   ret += carrier[2] == 1;
   ret += carrier[3] == 0;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -220,13 +232,13 @@ void injection_test_11() {
   uint8_t carrier[size];
   carrier[0] = original_bit;
   for(int i = 0; i < size; i++) carrier[i] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   ret += carrier[0] == 1;
   ret += carrier[1] == 1;
   ret += carrier[2] == 1;
   ret += carrier[3] == 0;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -236,13 +248,13 @@ void injection_test_12() {
   uint8_t carrier[size];
   carrier[0] = original_bit;
   for(int i = 0; i < size; i++) carrier[i] = original_bit;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   ret += carrier[0] == 1;
   ret += carrier[1] == 1;
   ret += carrier[2] == 1;
   ret += carrier[3] == 0;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -253,13 +265,13 @@ void injection_test_13() {
   //byte original: 0101
   carrier[0] = carrier[2] =  0;
   carrier[1] = carrier[3] = 1;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   ret += carrier[0] == 0;
   ret += carrier[1] == 0;
   ret += carrier[2] == 1;
   ret += carrier[3] == 0;
-  destroy_lsb(l1);
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 
@@ -270,13 +282,79 @@ void injection_test_14() {
   //byte original: 1101
   carrier[0] = carrier[1] = carrier[3] =  1;
   carrier[2] = 0;
-  lsb l1 = create_lsb(1, (uint8_t *)carrier, size, size, 0);
-  for(int i = 0; i < size; i++) inject_bit(l1, injection, i);
+  lsb l = create_lsb(1, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n));
   ret += carrier[0] == 1;
   ret += carrier[1] == 1;
   ret += carrier[2] == 1;
   ret += carrier[3] == 1;
-  destroy_lsb(l1);
+  destroy_lsb(l);
+  assert_true(ret == size);
+}
+
+void injection_test_15() {
+  int size = 2, ret = 0;
+  uint8_t injection = 0xF;
+  uint8_t carrier[size];
+  carrier[0] = carrier[1] = 0;
+  lsb l = create_lsb(4, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * (l->n) / 2);
+  ret += carrier[0] == 3;
+  ret += carrier[1] == 3;
+  destroy_lsb(l);
+  assert_true(ret == size);
+}
+
+void injection_test_16() {
+  int size = 2, ret = 0;
+  uint8_t injection = 0x3;
+  uint8_t carrier[size];
+  carrier[0] = carrier[1] = 0;
+  lsb l = create_lsb(4, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * 2);
+  ret += carrier[0] == 0;
+  ret += carrier[1] == 3;
+  destroy_lsb(l);
+  assert_true(ret == size);
+}
+
+void injection_test_17() {
+  int size = 2, ret = 0;
+  uint8_t injection = 0xa;
+  uint8_t carrier[size];
+  carrier[0] = carrier[1] = 0;
+  lsb l = create_lsb(4, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * 2);
+  ret += carrier[0] == 2;
+  ret += carrier[1] == 2;
+  destroy_lsb(l);
+  assert_true(ret == size);
+}
+
+void injection_test_18() {
+  int size = 2, ret = 0;
+  uint8_t injection = 0xb;
+  uint8_t carrier[size];
+  carrier[0] = carrier[1] = 0;
+  lsb l = create_lsb(4, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * 2);
+  ret += carrier[0] == 2;
+  ret += carrier[1] == 3;
+  destroy_lsb(l);
+  assert_true(ret == size);
+}
+
+void injection_test_19() {
+  int size = 2, ret = 0;
+  uint8_t injection = 0xb;
+  uint8_t carrier[size];
+  carrier[0] = 1;
+  carrier[1] = 0;
+  lsb l = create_lsb(4, (uint8_t *)carrier, size, size, 0);
+  for(int i = 0; i < size; i++) inject_bit(l, injection, i * 2);
+  ret += carrier[0] == 2;
+  ret += carrier[1] == 3;
+  destroy_lsb(l);
   assert_true(ret == size);
 }
 

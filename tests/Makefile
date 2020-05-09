@@ -8,10 +8,10 @@ FW = tasteful
 TEST_SRC = $(wildcard *.c)
 OBJ= $(TEST_SRC:.c=.o)
 
-all: src $(TEST_SRC:.c=.tasty) $(FW)
+all: ../src/.objs/%.o $(TEST_SRC:.c=.tasty) $(FW)
 	@echo "\e[36m[Tests ready]\e[0m"
 
-src:
+../src/.objs/%.o: $(SOURCES)
 	@cd ../src/; make --no-print-directory; cd ../tests;
 
 #generar los ejecutables de las suites
