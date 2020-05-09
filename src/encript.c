@@ -1,22 +1,22 @@
 #include <encript.h>
-#include <openssl/evp.h>
+#include <openssl/conf.h>
 #include <openssl/err.h>
-#include <openssl/ssl.h>
+#include <openssl/evp.h>
 #include <openssl/rand.h>
 #include <openssl/rsa.h>
-#include "openssl/sha.h"
+#include <openssl/ssl.h>
 #include <openssl/x509.h>
-#include <string.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <openssl/conf.h>
+#include <string.h>
 
+#include "openssl/sha.h"
 
 // For development to avoid gcc errors
 #define UNUSED(x) (void)(x)
 
-
-// Codigo adaptado de  https://wiki.openssl.org/index.php/EVP_Symmetric_Encryption_and_Decryption
+// Codigo adaptado de
+// https://wiki.openssl.org/index.php/EVP_Symmetric_Encryption_and_Decryption
 // int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
 //             unsigned char *iv, unsigned char *ciphertext)
 // {
@@ -44,7 +44,8 @@
 //      * Provide the message to be encrypted, and obtain the encrypted output.
 //      * EVP_EncryptUpdate can be called multiple times if necessary
 //      */
-//     if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext, plaintext_len))
+//     if(1 != EVP_EncryptUpdate(ctx, ciphertext, &len, plaintext,
+//     plaintext_len))
 //         handleErrors();
 //     ciphertext_len = len;
 
@@ -62,80 +63,67 @@
 //     return ciphertext_len;
 // }
 
-
-
 uint32_t get_key_size(enum algorithms alg) {
-    switch (alg) {
-        case des:
-            return 64;
-        case aes128:
-            return 128;
-        case aes192:
-            return 192;
-        case aes256:
-            return 256;
-        default:
-            // TODO Exception handling
-            printf("ERROR: UNKNOWN ALGORITHM");
-            abort();
-    }
+  switch (alg) {
+    case des:
+      return 64;
+    case aes128:
+      return 128;
+    case aes192:
+      return 192;
+    case aes256:
+      return 256;
+    default:
+      // TODO Exception handling
+      printf("ERROR: UNKNOWN ALGORITHM");
+      abort();
+  }
 }
 
 // Calculate hash
 // https://stackoverflow.com/questions/918676/generate-sha-hash-in-c-using-openssl-library
 
-bool simpleSHA256(void* input, unsigned long length, unsigned char* md)
-{
-    SHA256_CTX context;
-    if(!SHA256_Init(&context))
-        return false;
+bool simpleSHA256(void* input, unsigned long length, unsigned char* md) {
+  SHA256_CTX context;
+  if (!SHA256_Init(&context)) return false;
 
-    if(!SHA256_Update(&context, input, length))
-        return false;
+  if (!SHA256_Update(&context, input, length)) return false;
 
-    if(!SHA256_Final(md, &context))
-        return false;
+  if (!SHA256_Final(md, &context)) return false;
 
-    return true;
+  return true;
 }
 
-void print_hash_binary(unsigned char * sha256hash) {
-    size_t len;
-    for (len = 0; len < SHA256_DIGEST_LENGTH; ++len) {
-        printf("%02x", sha256hash[len]);
-    }
-    printf("\n");
+void print_hash_binary(unsigned char* sha256hash) {
+  size_t len;
+  for (len = 0; len < SHA256_DIGEST_LENGTH; ++len) {
+    printf("%02x", sha256hash[len]);
+  }
+  printf("\n");
 }
 
-void encrypt(char *plaintext, char* password, char* ciphertext, enum modes mode, enum algorithms algorithm) {
-    // Generate the key from the password
-    uint32_t key_size_in_bits = get_key_size(algorithm);
+void encrypt(char* plaintext, char* password, char* ciphertext, enum modes mode,
+             enum algorithms algorithm) {
+  // Generate the key from the password
+  uint32_t key_size_in_bits = get_key_size(algorithm);
 
+  uint8_t key[key_size_in_bits / 8];
 
-    uint8_t key[key_size_in_bits / 8];
-
-    // Sha definition
-    unsigned char md[SHA256_DIGEST_LENGTH]; // 32 bytes
-    if(!simpleSHA256(password, strlen(password), md))
-    {
-        printf("There was an error calculating the key from the password");
-        abort();
-    }
-    printf("hash: %s", md);
-    
-
-    UNUSED(key);
-    UNUSED(plaintext);
-    UNUSED(mode);
-    UNUSED(ciphertext);
-
-}
-
-
-
-void handleErrors(void)
-{
-    ERR_print_errors_fp(stderr);
+  // Sha definition
+  unsigned char md[SHA256_DIGEST_LENGTH];  // 32 bytes
+  if (!simpleSHA256(password, strlen(password), md)) {
+    printf("There was an error calculating the key from the password");
     abort();
+  }
+  printf("hash: %s", md);
+
+  UNUSED(key);
+  UNUSED(plaintext);
+  UNUSED(mode);
+  UNUSED(ciphertext);
 }
 
+void handleErrors(void) {
+  ERR_print_errors_fp(stderr);
+  abort();
+}

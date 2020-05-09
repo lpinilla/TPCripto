@@ -1,8 +1,8 @@
 #include <encript.h>
 #include <stdio.h>
-#include <testing_suite.h>
 #include <string.h>
-#include <unistd.h> 
+#include <testing_suite.h>
+#include <unistd.h>
 
 void sha256_test();
 
@@ -13,17 +13,16 @@ int main() {
   clear_suite();
 }
 
-
 void sha256_test() {
-    char* str = "hello world";
-    unsigned char  md[32];
-    if (!simpleSHA256(str, strlen(str), md)) {
-        assert_true(1== 0);
-    }
+  char* str = "hello world";
+  unsigned char md[32];
+  if (!simpleSHA256(str, strlen(str), md)) {
+    assert_true(1 == 0);
+  }
 
-    // Aca un test podria ser
+  // Aca un test podria ser
 
-    print_hash_binary(md);
+  print_hash_binary(md);
 
-    assert_true(1==1);
+  assert_true(1 == 1);
 }
