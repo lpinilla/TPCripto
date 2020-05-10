@@ -21,7 +21,7 @@ void sha256_test() {
         assert_true(1== 0);
     }
 
-    // Aca un test podria ser
+    // Aca un test podria ser comparar la salida de esta funcion con la de llamarlo por bash
 
     print_hash_binary(md);
 
