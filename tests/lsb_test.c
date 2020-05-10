@@ -27,6 +27,11 @@ void injection_test_17();
 void injection_test_18();
 void injection_test_19();
 void worker_lbs_steg_test_1();
+void worker_lbs_steg_test_2();
+void worker_lbs_steg_test_3();
+void worker_lbs_steg_test_4();
+void worker_lbs_steg_test_5();
+void worker_lbs_steg_test_6();
 
 int main() {
   create_suite("LSB suite");
@@ -52,6 +57,11 @@ int main() {
   add_test(injection_test_18);
   add_test(injection_test_19);
   add_test(worker_lbs_steg_test_1);
+  add_test(worker_lbs_steg_test_2);
+  add_test(worker_lbs_steg_test_3);
+  add_test(worker_lbs_steg_test_4);
+  add_test(worker_lbs_steg_test_5);
+  add_test(worker_lbs_steg_test_6);
   run_suite();
   clear_suite();
 }
@@ -69,6 +79,7 @@ void lsb_creation_test_1() {
   asserts += l->shift_val == 7;
   asserts += l->c_mask == 0x01;
   asserts += l->i_mask == 0x80;
+  destroy_lsb(l);
   assert_true(asserts == 9);
 }
 
@@ -401,12 +412,127 @@ void injection_test_20() {
 }
 
 void worker_lbs_steg_test_1() {
-  int size = 4;
-  uint8_t carrier[size], content = 0xa;  // bits 1010
+  int size = 8, ret = 0;
+  uint8_t carrier[size], content = 0x0a;  // bits 00001010
   for (int i = 0; i < size; i++) carrier[i] = 0;
-  payload p = create_payload(&content, sizeof(content));
-  lsb l = create_lsb(1, carrier, size, size, 1);
+  payload p = create_payload(&content, size);
+  lsb l = create_lsb(1, carrier, size, 1, 1);
   worker_lsb_steg(l, p, size);
   destroy_lsb(l);
   destroy_payload(p);
+    ret += carrier[0] == 0;
+    ret += carrier[1] == 0;
+    ret += carrier[2] == 0;
+    ret += carrier[3] == 0;
+    ret += carrier[4] == 1;
+    ret += carrier[5] == 0;
+    ret += carrier[6] == 1;
+    ret += carrier[7] == 0;
+    assert_true(ret == size);
+}
+
+void worker_lbs_steg_test_2() {
+  int size = 8, ret = 0;
+  uint8_t carrier[size], content = 0xa0;  // bits 10100000
+  for (int i = 0; i < size; i++) carrier[i] = 0;
+  payload p = create_payload(&content, size);
+  lsb l = create_lsb(1, carrier, size, 1, 1);
+  worker_lsb_steg(l, p, size);
+  destroy_lsb(l);
+  destroy_payload(p);
+    ret += carrier[0] == 1;
+    ret += carrier[1] == 0;
+    ret += carrier[2] == 1;
+    ret += carrier[3] == 0;
+    ret += carrier[4] == 0;
+    ret += carrier[5] == 0;
+    ret += carrier[6] == 0;
+    ret += carrier[7] == 0;
+    assert_true(ret == size);
+}
+
+void worker_lbs_steg_test_3() {
+  int size = 8, ret = 0;
+  uint8_t carrier[size], content = 0xd8;
+  for (int i = 0; i < size; i++) carrier[i] = 0xF;
+  payload p = create_payload(&content, size);
+  lsb l = create_lsb(1, carrier, size, 1, 1);
+  worker_lsb_steg(l, p, size);
+  destroy_lsb(l);
+  destroy_payload(p);
+    ret += carrier[0] == 0xf;
+    ret += carrier[1] == 0xf;
+    ret += carrier[2] == 0xe;
+    ret += carrier[3] == 0xf;
+    ret += carrier[4] == 0xf;
+    ret += carrier[5] == 0xe;
+    ret += carrier[6] == 0xe;
+    ret += carrier[7] == 0xe;
+    assert_true(ret == size);
+}
+
+void worker_lbs_steg_test_4() {
+  int size = 2, ret = 0;
+  uint8_t carrier[size], content = 0xd8;
+  for (int i = 0; i < size; i++) carrier[i] = 0xaa;
+  payload p = create_payload(&content, size);
+  lsb l = create_lsb(4, carrier, size, 1, 1);
+  worker_lsb_steg(l, p, size);
+  destroy_lsb(l);
+  destroy_payload(p);
+    ret += carrier[0] == 0xad;
+    ret += carrier[1] == 0xa8;
+    assert_true(ret == size);
+}
+
+void worker_lbs_steg_test_5() {
+  int size = 4, ret = 0;
+  uint8_t carrier[size], injection[2];
+  injection[0] = 0x8a;
+  injection[1] = 0x3b;
+  for (int i = 0; i < size; i++) carrier[i] = 0x0;
+  lsb l = create_lsb(4, carrier, size / 2, 1, 1);
+  lsb l2 = create_lsb(4, carrier + sizeof(uint8_t) * 2, size / 2, 1 ,1);
+  payload p = create_payload(injection, size / 2);
+  payload p2 = create_payload(injection + sizeof(uint8_t), size / 2);
+  worker_lsb_steg(l, p, size/2);
+  worker_lsb_steg(l2, p2, size/2);
+  destroy_lsb(l);
+  destroy_lsb(l2);
+  destroy_payload(p);
+  destroy_payload(p2);
+    ret += carrier[0] == 0x08;
+    ret += carrier[1] == 0x0a;
+    ret += carrier[2] == 0x03;
+    ret += carrier[3] == 0x0b;
+    assert_true(ret == size);
+}
+
+void worker_lbs_steg_test_6() {
+  int size = 8, ret = 0;
+  uint8_t carrier[size], injection[4];
+  injection[0] = 0x8a;
+  injection[1] = 0x3b;
+  injection[2] = 0x4c;
+  injection[3] = 0x05;
+  for (int i = 0; i < size; i++) carrier[i] = 0xaa;
+  lsb l = create_lsb(4, carrier, size / 2, size/2, 1);
+  lsb l2 = create_lsb(4,carrier + sizeof(uint8_t) * 4, size /2, size/2, 1);
+  payload p = create_payload(injection, 2);
+  payload p2 = create_payload(injection + sizeof(uint8_t) * 2, 2);
+  worker_lsb_steg(l, p, size/2);
+  worker_lsb_steg(l2, p2, size/2);
+  destroy_lsb(l);
+  destroy_lsb(l2);
+  destroy_payload(p);
+  destroy_payload(p2);
+    ret += carrier[0] == 0xa8;
+    ret += carrier[1] == 0xaa;
+    ret += carrier[2] == 0xa3;
+    ret += carrier[3] == 0xab;
+    ret += carrier[4] == 0xa4;
+    ret += carrier[5] == 0xac;
+    ret += carrier[6] == 0xa0;
+    ret += carrier[7] == 0xa5;
+    assert_true(ret == size);
 }
