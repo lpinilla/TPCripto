@@ -71,11 +71,8 @@ void inject_bit(lsb l, uint8_t i_byte, int bits_used) {
 void worker_lsb_steg(lsb l, payload p, long n_of_pixels) {
   if (l == NULL || p == NULL || n_of_pixels == 0) return;
   uint8_t i_byte = get_next_byte(p);
-  int step = (int)ceil(l->n / 2);
   for (int i = 0; i < n_of_pixels; i++) {
-    inject_bit(l, i_byte, i * step);
-    if (4 - ((i * step) % 4) == 0) {
-      i_byte = get_next_byte(p);
-    }
+    inject_bit(l, i_byte, i * l->n % BYTE_SIZE);
+    if ( (i * l->n) % BYTE_SIZE == 0) i_byte = get_next_byte(p);
   }
 }
