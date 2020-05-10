@@ -13,6 +13,7 @@ typedef struct t_lsb{
     long pixel_height; //cantidad de pixels de alto (filas)
     uint8_t c_mask; //máscara a aplicar a el byte del archivo contenedor para calcular I.
     uint8_t i_mask; //máscara a aplicar al byte a inyectar para saber qué bits usar.
+    uint8_t shift_val; //valor auxiliar que depende del modo que vamos a utilizar en las cuentas
 } t_lsb;
 
 typedef t_lsb * lsb;
