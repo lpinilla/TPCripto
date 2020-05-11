@@ -45,7 +45,6 @@ void destroy_lsb(lsb l) { free(l); }
 void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used) {
   if (l == NULL || c == NULL) return;
   uint8_t carrier_byte = c->content[c->counter];
-  printf("test %d \n", c->content[c->counter]);
   c->content[c->counter++] =
       ((i_byte & (l->i_mask >> bits_used)) >> (l->shift_val - bits_used)) ^
       ((carrier_byte & l->c_mask) ^ carrier_byte);
