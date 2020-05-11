@@ -4,17 +4,12 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#define BYTE_SIZE 8
 
-lsb create_lsb(int n, uint8_t* carrier, long size, long p_w, long p_h) {
+lsb create_lsb(int n){
   lsb l = (lsb)malloc(sizeof(t_lsb));
   l->n = n;
-  l->carrier = carrier;
-  l->c_size = size;
-  l->pixel_width = p_w;
-  l->pixel_height = p_h;
-  l->counter = 0;
   switch (n) {
     case 1:
           l->c_mask = 0x01;
@@ -47,20 +42,22 @@ void destroy_lsb(lsb l) { free(l); }
  * que inyectar ahora, podemos realizar los desplazamientos correctos
  * de la máscara con los bits ya utilizados.
  */
-void inject_bit(lsb l, uint8_t i_byte, int bits_used) {
-  if (l == NULL) return;
-  uint8_t carrier_byte = l->carrier[l->counter];
-  l->carrier[l->counter++] =
+void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used) {
+  if (l == NULL || c == NULL) return;
+  uint8_t carrier_byte = c->content[c->counter];
+  printf("test %d \n", c->content[c->counter]);
+  c->content[c->counter++] =
       ((i_byte & (l->i_mask >> bits_used)) >> (l->shift_val - bits_used)) ^
       ((carrier_byte & l->c_mask) ^ carrier_byte);
 }
 
 // función que va inyectar los bits en n píxeles sobre cada "fila" de la imagen
-void worker_lsb_steg(lsb l, payload p, long n_of_pixels) {
-  if (l == NULL || p == NULL || n_of_pixels == 0) return;
+void worker_lsb_steg(lsb l, carrier c, payload p, long n_of_pixels) {
+  if (l == NULL || c == NULL || p == NULL || n_of_pixels == 0) return;
   uint8_t i_byte = 0;
   for (int i = 0; i < n_of_pixels; i++) {
     if ( (i * l->n) % BYTE_SIZE == 0) i_byte = get_next_byte(p);
-    inject_bit(l, i_byte, i * l->n % BYTE_SIZE);
+    inject_bit(l, c, i_byte, i * l->n % BYTE_SIZE);
   }
 }
+

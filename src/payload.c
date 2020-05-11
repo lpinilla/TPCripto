@@ -7,7 +7,6 @@ payload create_payload(uint8_t* content, long size) {
   p->content = content;
   p->counter = 0;
   p->size = size;
-  p->bits_used = 0;
   return p;
 }
 
