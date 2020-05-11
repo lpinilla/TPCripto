@@ -37,14 +37,14 @@ cipherFunction getAes128EncriptionFunctionPtr (enum modes mode) {
         case ecb:
             return &EVP_aes_128_ecb;
         case cfb:
-            // Todo. existe EVP_aes_128_cfb128 EVP_aes_128_cfb8 y EVP_aes_128_cfb1. Preguntar cual va
-            return &EVP_aes_128_cfb128;
+            // Todo. existe EVP_aes_128_cfb8 EVP_aes_128_cfb8 y EVP_aes_128_cfb1. Preguntar cual va
+            return &EVP_aes_128_cfb8;
         case ofb:
             return &EVP_aes_128_ofb;
         case cbc:
             return &EVP_aes_128_cbc;
         default:
-            printf("ERROR: UNKNOWN MODE %d", mode);
+            printf("ERROR: UNKNOWN MODE %d", mode); 
             abort();
     }
 }
@@ -54,8 +54,8 @@ cipherFunction getAes192EncriptionFunctionPtr (enum modes mode) {
         case ecb:
             return &EVP_aes_192_ecb;
         case cfb:
-            // Todo. existe EVP_aes_192_cfb128 EVP_aes_192_cfb8 y EVP_aes_192_cfb1. Preguntar cual va
-            return &EVP_aes_192_cfb128;
+            // Todo. existe EVP_aes_192_cfb8 EVP_aes_192_cfb8 y EVP_aes_192_cfb1. Preguntar cual va
+            return &EVP_aes_192_cfb8;
         case ofb:
             return &EVP_aes_192_ofb;
         case cbc:
@@ -71,8 +71,8 @@ cipherFunction getAes256EncriptionFunctionPtr (enum modes mode) {
         case ecb:
             return &EVP_aes_256_ecb;
         case cfb:
-            // Todo. existe EVP_aes_256_cfb128 EVP_aes_256_cfb8 y EVP_aes_256_cfb1. Preguntar cual va
-            return &EVP_aes_256_cfb128;
+            // Todo. existe EVP_aes_256_cfb8 EVP_aes_256_cfb8 y EVP_aes_256_cfb1. Preguntar cual va
+            return &EVP_aes_256_cfb8;
         case ofb:
             return &EVP_aes_256_ofb;
         case cbc:
@@ -128,10 +128,10 @@ int _encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
 
     int ciphertext_len;
 
-    printf("Paramatros que llegaron: \n");
-    dump_binary("Plain", plaintext, plaintext_len);
-    dump_binary("Key",key, 256 / 8);
-    dump_binary("Iv", iv, 128 / 8);
+    // printf("Paramatros que llegaron: \n");
+    // dump_binary("Plain", plaintext, plaintext_len);
+    // dump_binary("Key",key, 256 / 8 / 2);
+    // dump_binary("Iv", iv, 128 / 8 / 2);
 
     /* Create and initialise the context */
     if(!(ctx = EVP_CIPHER_CTX_new()))
@@ -165,16 +165,19 @@ int _encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
     /* Clean up */
     EVP_CIPHER_CTX_free(ctx);
 
-    dump_binary("Enc", ciphertext, 200/ 8);
+    // dump_binary("Enc", ciphertext, 200/ 8 / 2);
     return ciphertext_len;
 }
 
 int _decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
-            unsigned char *iv, unsigned char *plaintext) {
+            unsigned char *iv, unsigned char *plaintext, cipherFunction cipherFunctionPtr) {
     EVP_CIPHER_CTX *ctx;
 
     int len;
-
+    // printf("Paramatros que llegaron a decrypt: \n");
+    // dump_binary("cipher", ciphertext, ciphertext_len);
+    // dump_binary("Key",key, 256 / 8 / 2);
+    // dump_binary("Iv", iv, 128 / 8 / 2);
     int plaintext_len;
 
     /* Create and initialise the context */
@@ -188,7 +191,7 @@ int _decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
      * IV size for *most* modes is the same as the block size. For AES this
      * is 128 bits
      */
-    if(1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, key, iv))
+    if(1 != EVP_DecryptInit_ex(ctx, (*cipherFunctionPtr)(), NULL, key, iv))
         handleErrors();
 
     /*
@@ -267,40 +270,49 @@ bool simpleSHA256(void* input, unsigned long length, unsigned char* md)
 
 
 
-int encrypt(unsigned char *plaintext, char* password, unsigned char* ciphertext, enum modes mode, enum algorithms algorithm) {
+// Return value is size of plaintext
+int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertext, enum modes mode, enum algorithms algorithm) {
+    int plaintext_len;
+    // Sacado del Anexo
+    const EVP_CIPHER *cipher;
+    const EVP_MD *dgst = NULL; 
+    // int keylen, ivlen;
     // Generate the key from the password
-    size_t key_size_in_bits = get_key_size(algorithm);
-
-    uint8_t key[key_size_in_bits / 8];
-
-    // Sha definition
-    unsigned char md[SHA256_DIGEST_LENGTH]; // 32 bytes
-    if(!simpleSHA256(password, strlen(password), md)) {
-        printf("There was an error calculating the key from the password");
-        abort();
-    }
-    // printf("hash: %s\n", md);
-    
-    // Copy to our key only the N bits necessary for our algorithm
-    memcpy(key, md, key_size_in_bits / 8);
-    printf("Key: ");
-    print_hash_binary(key);
+    unsigned char key[EVP_MAX_KEY_LENGTH];
+    unsigned char iv[EVP_MAX_IV_LENGTH]; 
+    const unsigned char *salt = NULL;
     cipherFunction cipherFunctionPtr = getEncriptionFunctionPtr(algorithm, mode);
+    cipher = (*cipherFunctionPtr)();
+    dgst = EVP_sha256();
+    EVP_BytesToKey(cipher, dgst, salt, (unsigned char *) password, strlen(password),1, key, iv);
+    // keylen = EVP_CIPHER_key_length(cipher);
+    // ivlen = EVP_CIPHER_iv_length(cipher);
+    
+    plaintext_len = _decrypt(ciphertext, strlen((char *)ciphertext), key, iv, plaintext, cipherFunctionPtr);
+
+    return plaintext_len;
 
 
-    // Generate IV
-    // Todo: Generate random IV according to algorithm
-    size_t iv_size_in_bits = get_iv_size(algorithm);
-    unsigned char iv[iv_size_in_bits / 8];
-    memset(iv,0,iv_size_in_bits/ 8);
+}
 
-    /* A 256 bit key */
-    unsigned char *key2 = (unsigned char *)"01234567890123456789012345678901";
+// Return value is size of ciphertext
+int encrypt(unsigned char *plaintext, char* password, unsigned char* ciphertext, enum modes mode, enum algorithms algorithm) {
 
-    /* A 128 bit IV */
-    unsigned char *iv2 = (unsigned char *)"0123456789012345";
-
-    int cipher_len = _encrypt(plaintext, strlen((char *)plaintext), key2, iv2, ciphertext, cipherFunctionPtr);
+    // Sacado del Anexo
+    const EVP_CIPHER *cipher;
+    const EVP_MD *dgst = NULL; 
+    // int keylen, ivlen;
+    // Generate the key from the password
+    unsigned char key[EVP_MAX_KEY_LENGTH];
+    unsigned char iv[EVP_MAX_IV_LENGTH]; 
+    const unsigned char *salt = NULL;
+    cipherFunction cipherFunctionPtr = getEncriptionFunctionPtr(algorithm, mode);
+    cipher = (*cipherFunctionPtr)();
+    dgst = EVP_sha256();
+    EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)password, strlen(password),1, key, iv);
+    // keylen = EVP_CIPHER_key_length(cipher);
+    // ivlen = EVP_CIPHER_iv_length(cipher);
+    int cipher_len = _encrypt(plaintext, strlen((char *)plaintext), key, iv, ciphertext, cipherFunctionPtr);
     return cipher_len;
 }
 
