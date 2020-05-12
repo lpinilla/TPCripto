@@ -1,7 +1,11 @@
 #ifndef _ENCRYPT_H_
 #define _ENCRYPT_H_
 
+
+
 #include <stdbool.h>
+#include <openssl/aes.h>
+#include <openssl/des.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
@@ -10,6 +14,9 @@
 #include "openssl/sha.h"
 #include <openssl/x509.h>
 #include <openssl/conf.h>
+
+#define MAX_ENCR_LENGTH 1024 
+#define UNUSED(x) (void)(x)
 
 enum algorithms {
     des,
@@ -32,7 +39,7 @@ typedef const EVP_CIPHER *(*cipherFunction)(void);
 int encrypt(unsigned char *plaintext, char* password, unsigned char* ciphertext, enum modes mode, enum algorithms algorithm);
 
 // Return value is size of plaintext
-int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertext, enum modes mode, enum algorithms algorithm);
+int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertext, int ciphertext_len, enum modes mode, enum algorithms algorithm);
 
 bool simpleSHA256(void* input, unsigned long length, unsigned char* md);
 void print_hash_binary(unsigned char * sha256hash);

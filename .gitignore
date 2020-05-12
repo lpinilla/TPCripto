@@ -38,6 +38,8 @@
 *.i*86
 *.x86_64
 *.hex
+*stegobmp
+
 
 # Debug files
 *.dSYM/
@@ -56,3 +58,4 @@ dkms.conf
 
 # IDE Specific
 *.vscode
+

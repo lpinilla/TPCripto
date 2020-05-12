@@ -28,7 +28,7 @@ void des_ofb_test();
 int i = 0;
 int main() {
   create_suite("Encription test");
-  // add_test(aes256_ecb_test);
+  add_test(aes256_ecb_test);
   add_test(aes192_ecb_test);
   add_test(aes128_ecb_test);
   add_test(des_ecb_test);
@@ -55,13 +55,13 @@ void encrypt_decrypt_test(enum algorithms algorithm, enum modes mode) {
     char * plain = "hola, me llamo es brian";
     char * password = "hello";
 
-
+  
     // Aca se va a poner el texto cifrado
     char * cipher = malloc(2048);
     /// Aca se va a poner el texto descifrado
     char * unsciphered = malloc(2048);
-    encrypt((unsigned char *)plain, password, (unsigned char *) cipher, mode, algorithm);
-    int decrypt_len = decrypt((unsigned char *)unsciphered, password, (unsigned char *)cipher, mode, algorithm);
+    int cipher_len = encrypt((unsigned char *)plain, password, (unsigned char *) cipher, mode, algorithm);
+    int decrypt_len = decrypt((unsigned char *)unsciphered, password, (unsigned char *)cipher, cipher_len, mode, algorithm);
     assert_false(memcmp(plain, unsciphered, decrypt_len));
     free(cipher);
     free(unsciphered);

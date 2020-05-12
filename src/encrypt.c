@@ -4,10 +4,15 @@
 #include <stdio.h>
 
 
-// For development to avoid gcc errors
-#define UNUSED(x) (void)(x)
+// For development to avoid gcc error
 
 
+void mostrarKey(unsigned char key[], int len) {
+    int i;
+    for (i = 0; i < len; i++) {
+        printf("%0x", key[i]);
+    }
+} 
 
 
 void handleErrors(void) {
@@ -101,23 +106,6 @@ cipherFunction getEncriptionFunctionPtr(enum algorithms alg, enum modes mode) {
     }
 }
 
-void print_binary(unsigned char * binary, size_t size) {
-    size_t len;
-    for (len = 0; len < size; ++len) {
-        printf("%02x", binary[len]);
-    }
-    printf("\n");
-}
-
-void print_hash_binary(unsigned char * sha256hash) {
-    print_binary(sha256hash, SHA256_DIGEST_LENGTH);
-}
-
-void dump_binary(char * title, unsigned char * binary, size_t size) {
-    printf("%s: \t", title);
-    print_binary(binary, size);
-}
-
 // Codigo adaptado de  https://wiki.openssl.org/index.php/EVP_Symmetric_Encryption_and_Decryption
 int _encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
             unsigned char *iv, unsigned char *ciphertext, cipherFunction cipherFunctionPtr)
@@ -145,6 +133,7 @@ int _encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
      */
     if(1 != EVP_EncryptInit_ex(ctx, (*cipherFunctionPtr)(), NULL, key, iv))
         handleErrors();
+
 
     /*
      * Provide the message to be encrypted, and obtain the encrypted output.
@@ -217,61 +206,8 @@ int _decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
 }
 
 
-
-size_t get_iv_size(enum algorithms alg) {
-    switch (alg) {
-        case des:
-            return 64;
-        case aes128:
-        case aes192:
-        case aes256:
-            return 128;
-        default:
-            // TODO Exception handling
-            printf("ERROR: UNKNOWN ALGORITHM");
-            abort();
-    }
-}
-
-size_t get_key_size(enum algorithms alg) {
-    switch (alg) {
-        case des:
-            return 64;
-        case aes128:
-            return 128;
-        case aes192:
-            return 192;
-        case aes256:
-            return 256;
-        default:
-            // TODO Exception handling
-            printf("ERROR: UNKNOWN ALGORITHM");
-            abort();
-    }
-}
-
-// Calculate hash
-// https://stackoverflow.com/questions/918676/generate-sha-hash-in-c-using-openssl-library
-
-bool simpleSHA256(void* input, unsigned long length, unsigned char* md)
-{
-    SHA256_CTX context;
-    if(!SHA256_Init(&context))
-        return false;
-
-    if(!SHA256_Update(&context, input, length))
-        return false;
-
-    if(!SHA256_Final(md, &context))
-        return false;
-
-    return true;
-}
-
-
-
 // Return value is size of plaintext
-int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertext, enum modes mode, enum algorithms algorithm) {
+int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertext, int ciphertext_len, enum modes mode, enum algorithms algorithm) {
     int plaintext_len;
     // Sacado del Anexo
     const EVP_CIPHER *cipher;
@@ -285,10 +221,13 @@ int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertex
     cipher = (*cipherFunctionPtr)();
     dgst = EVP_sha256();
     EVP_BytesToKey(cipher, dgst, salt, (unsigned char *) password, strlen(password),1, key, iv);
-    // keylen = EVP_CIPHER_key_length(cipher);
-    // ivlen = EVP_CIPHER_iv_length(cipher);
-    
-    plaintext_len = _decrypt(ciphertext, strlen((char *)ciphertext), key, iv, plaintext, cipherFunctionPtr);
+    int keylen = EVP_CIPHER_key_length(cipher);
+    int ivlen = EVP_CIPHER_iv_length(cipher);
+
+    UNUSED(keylen);
+    UNUSED(ivlen);
+
+    plaintext_len = _decrypt(ciphertext, ciphertext_len, key, iv, plaintext, cipherFunctionPtr);
 
     return plaintext_len;
 
@@ -297,11 +236,10 @@ int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertex
 
 // Return value is size of ciphertext
 int encrypt(unsigned char *plaintext, char* password, unsigned char* ciphertext, enum modes mode, enum algorithms algorithm) {
-
     // Sacado del Anexo
     const EVP_CIPHER *cipher;
     const EVP_MD *dgst = NULL; 
-    // int keylen, ivlen;
+    int keylen, ivlen;
     // Generate the key from the password
     unsigned char key[EVP_MAX_KEY_LENGTH];
     unsigned char iv[EVP_MAX_IV_LENGTH]; 
@@ -309,10 +247,17 @@ int encrypt(unsigned char *plaintext, char* password, unsigned char* ciphertext,
     cipherFunction cipherFunctionPtr = getEncriptionFunctionPtr(algorithm, mode);
     cipher = (*cipherFunctionPtr)();
     dgst = EVP_sha256();
+
+    int inl = strlen((char *)plaintext);
     EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)password, strlen(password),1, key, iv);
-    // keylen = EVP_CIPHER_key_length(cipher);
-    // ivlen = EVP_CIPHER_iv_length(cipher);
-    int cipher_len = _encrypt(plaintext, strlen((char *)plaintext), key, iv, ciphertext, cipherFunctionPtr);
+    keylen = EVP_CIPHER_key_length(cipher);
+    ivlen = EVP_CIPHER_iv_length(cipher);
+    int cipher_len = _encrypt(plaintext, inl, key, iv, ciphertext, cipherFunctionPtr);
+
+
+    UNUSED(keylen);
+    UNUSED(ivlen);
+
     return cipher_len;
 }
 
