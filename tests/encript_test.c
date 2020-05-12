@@ -28,25 +28,25 @@ void des_ofb_test();
 int i = 0;
 int main() {
   create_suite("Encription test");
-  add_test(aes256_ecb_test);
-  add_test(aes192_ecb_test);
-  add_test(aes128_ecb_test);
-  add_test(des_ecb_test);
+  add_named_test(aes256_ecb_test, "aes256_ecb_test");
+  add_named_test(aes192_ecb_test, "aes192_ecb_test");
+  add_named_test(aes128_ecb_test, "aes128_ecb_test");
+  add_named_test(des_ecb_test, "des_ecb_test");
 
-  add_test(aes256_cfb_test);
-  add_test(aes192_cfb_test);
-  add_test(aes128_cfb_test);
-  add_test(des_cfb_test);
+  add_named_test(aes256_cfb_test, "aes256_cfb_test");
+  add_named_test(aes192_cfb_test, "aes192_cfb_test");
+  add_named_test(aes128_cfb_test, "aes128_cfb_test");
+  add_named_test(des_cfb_test, "des_cfb_test");
 
-  add_test(aes256_ofb_test);
-  add_test(aes192_ofb_test);
-  add_test(aes128_ofb_test);
-  add_test(des_ofb_test);
+  add_named_test(aes256_ofb_test, "aes256_ofb_test");
+  add_named_test(aes192_ofb_test, "aes192_ofb_test");
+  add_named_test(aes128_ofb_test, "aes128_ofb_test");
+  add_named_test(des_ofb_test, "des_ofb_test");
 
-  add_test(aes256_cbc_test);
-  add_test(aes192_cbc_test); // Falla
-  add_test(aes128_cbc_test); // Falla
-  add_test(des_cbc_test);
+  add_named_test(aes256_cbc_test, "aes256_cbc_test");
+  add_named_test(aes192_cbc_test, "aes192_cbc_test"); // Falla
+  add_named_test(aes128_cbc_test, "aes128_cbc_test"); // Falla
+  add_named_test(des_cbc_test, "des_cbc_test");
   run_suite();
   clear_suite();
 }
