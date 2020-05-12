@@ -5,10 +5,11 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <stdio.h>
 
 jobs divide_jobs(lsb l, carrier c, payload p){
-int pixels_needed = p->size * (BYTE_SIZE / l->n);
-    long jobs_needed = (long) ceil(c->pixel_width / pixels_needed); //tamaño de los arrays
+    int pixels_needed = p->size * (BYTE_SIZE / l->n);
+    long jobs_needed = (long) ceil( (float) pixels_needed / c->pixel_width); //tamaño de los arrays
     jobs ret = (jobs) malloc(sizeof(t_jobs));
     ret->size = jobs_needed;
     ret->carriers = (carrier *) malloc(sizeof(t_carrier) * jobs_needed);
