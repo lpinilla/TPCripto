@@ -1,11 +1,13 @@
 #include <lsb.h>
 #include <math.h>
 #include <payload.h>
+#include <carrier.h>
+#include <jobs.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <pthread.h>
 
 lsb create_lsb(int n){
   lsb l = (lsb)malloc(sizeof(t_lsb));
@@ -60,3 +62,38 @@ void worker_lsb_steg(lsb l, carrier c, payload p, long n_of_pixels) {
   }
 }
 
+void * worker_sub_routine(void * args){
+    t_routine_args * ar = (t_routine_args *) args;
+    worker_lsb_steg(
+            ar->l,
+            ar->c,
+            ar->p,
+            ar->n_of_pixels);
+    return NULL; //podría retornar el estado de la tarea
+}
+
+
+void lsb_steg(int n, carrier c, payload p){
+    if(n <= 0 || c == NULL || p == NULL) return;
+    long n_of_pixels = 0;
+    long payload_reminder = p->size % c->pixel_width;
+    lsb l = create_lsb(n);
+    jobs total_jobs = divide_jobs(l, c, p);
+    pthread_t main_thread;
+    for(long i=0; i < total_jobs->size; i++){
+        n_of_pixels = total_jobs[i].carriers[i]->pixel_width;
+        if(i == (total_jobs->size - 1)){
+            n_of_pixels = (payload_reminder == 0)?
+                total_jobs[i].carriers[i]->pixel_width : payload_reminder;
+        }
+        t_routine_args args =
+        {
+            .l = l,
+            .c = total_jobs[i].carriers[i],
+            .p = total_jobs[i].payloads[i],
+            .n_of_pixels = n_of_pixels
+        };
+        pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args);
+    }
+    pthread_join(main_thread, NULL);
+}

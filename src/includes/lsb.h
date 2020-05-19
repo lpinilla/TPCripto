@@ -17,6 +17,14 @@ typedef struct t_lsb{
 
 typedef t_lsb * lsb;
 
+typedef struct{
+    lsb l;
+    carrier c;
+    payload p;
+    long n_of_pixels;
+}t_routine_args;
+
+
 lsb create_lsb(int n);
 
 void destroy_lsb(lsb l);
@@ -28,5 +36,11 @@ void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used);
 
 //función para realizar la steganografía.
 void worker_lsb_steg(lsb l, carrier c, payload p, long n_of_pixels);
+
+//wrapper de worker_lsb_steg para poder ser usado con threads
+void * worker_sub_routine(void * args);
+
+//Steagnografía con lsb-n (sin incluír lsb-i)
+void lsb_steg(int n, carrier c, payload p);
 
 #endif

@@ -7,7 +7,6 @@
 
 typedef struct t_jobs{
     long size; //tamaño de los arrays
-    //lsb * lsbs; //array de lsb defasados sobre el puntero content
     carrier * carriers;
     payload * payloads; //array de payloads con defasajes en el content de los payload
 } t_jobs;
@@ -18,6 +17,5 @@ typedef t_jobs * jobs;
 jobs divide_jobs(lsb l, carrier c, payload p);
 
 void destroy_jobs(jobs j);
-
 
 #endif

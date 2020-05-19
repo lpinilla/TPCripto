@@ -1,7 +1,7 @@
 #ifndef _HIDDEN_FILE_H_
 #define _HIDDEN_FILE_H_
 
-#include <encript.h>
+#include <encrypt.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdio.h>

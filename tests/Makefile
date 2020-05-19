@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=c99 -I ../src/includes/ -I ../Tasteful -pthread -Wno-nonnull-compare
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=c18 -I ../src/includes/ -I ../Tasteful -pthread -Wno-nonnull-compare
 CLIBRARIES = -lssl -lcrypto
 LIB = testing_suite.c
 SOURCES = $(filter-out ../src/main.c, $(wildcard ../src/*.c))
@@ -8,18 +8,25 @@ FW = tasteful
 TEST_SRC = $(wildcard *.c)
 OBJ= $(TEST_SRC:.c=.o)
 
-all: ../src/.objs/%.o $(TEST_SRC:.c=.tasty) $(FW)
+all: $(TEST_SRC:.c=.tasty) $(FW)
 	@echo "\e[36m[Tests ready]\e[0m"
 
-../src/.objs/%.o: $(SOURCES)
+../src/.objs/%.o: ../src/%.c
 	@cd ../src/; make --no-print-directory; cd ../tests;
 
+../src/%.c:
+	@cd ../src/; make --no-print-directory; cd ../tests;
+
+$(TEST_SRC:.c=.tasty): ../src/.objs/%.o
+
+
 #generar los ejecutables de las suites
-#$(TEST_SRC:.c=.tasty): .objs/$(OBJ)
 %.tasty: .objs/%.o
 	@echo "\e[34mCompiling\e[0m $^"
 	$(CC) $(CFLAGS) -o $@ $< ../Tasteful/$(LIB) $(SOURCES) $(CLIBRARIES) -lm
 	@echo "\e[32mCompiled\e[0m $@"
+
+.PRECIOUS: .objs/%.o
 
 #armar los .o de los .tasty
 .objs/%.o: %.c
