@@ -52,7 +52,7 @@ void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used) {
       ((carrier_byte & l->c_mask) ^ carrier_byte);
 }
 
-// función que va inyectar los bits en n píxeles sobre cada "fila" de la imagen
+// función que va inyectar los bits en los pixels a lo largo de la imágen
 void worker_lsb_steg(lsb l, carrier c, payload p, long n_of_pixels) {
   if (l == NULL || c == NULL || p == NULL || n_of_pixels == 0) return;
   uint8_t i_byte = 0;
@@ -69,31 +69,37 @@ void * worker_sub_routine(void * args){
             ar->c,
             ar->p,
             ar->n_of_pixels);
-    return NULL; //podría retornar el estado de la tarea
+    return NULL;
 }
 
 
 void lsb_steg(int n, carrier c, payload p){
     if(n <= 0 || c == NULL || p == NULL) return;
-    long n_of_pixels = 0;
-    long payload_reminder = p->size % c->pixel_width;
+    int n_threads = 0;
+    //long n_of_pixels = 0;
+    //long payload_reminder = p->size % BYTE_INJECTIONS_PER_JOB;
     lsb l = create_lsb(n);
-    jobs total_jobs = divide_jobs(l, c, p);
+    jobs total_jobs = divide_jobs(l, c, p, BYTE_INJECTIONS_PER_JOB);
     pthread_t main_thread;
+    t_routine_args args[MAX_THREADS];
     for(long i=0; i < total_jobs->size; i++){
-        n_of_pixels = total_jobs[i].carriers[i]->pixel_width;
-        if(i == (total_jobs->size - 1)){
-            n_of_pixels = (payload_reminder == 0)?
-                total_jobs[i].carriers[i]->pixel_width : payload_reminder;
+        //n_of_pixels = BYTE_INJECTIONS_PER_JOB;
+        //if(i == (total_jobs->size - 1)){
+        //    n_of_pixels = (payload_reminder == 0)? BYTE_INJECTIONS_PER_JOB : payload_reminder;
+        //}
+        args[i].l = l;
+        args[i].c = (carrier) total_jobs[i].carrier;
+        args[i].p = (payload) total_jobs[i].payload;
+        args[i].n_of_pixels = args[i].c->c_size;
+        pthread_create(&main_thread, NULL, worker_sub_routine, (void *) (args + sizeof(t_routine_args) * i));
+        n_threads++;
+        //si alcanzamos el límite, esperamos que terminen para no saturar la pc
+        if(n_threads == MAX_THREADS){
+            pthread_join(main_thread, NULL);
+            n_threads = 0;
         }
-        t_routine_args args =
-        {
-            .l = l,
-            .c = total_jobs[i].carriers[i],
-            .p = total_jobs[i].payloads[i],
-            .n_of_pixels = n_of_pixels
-        };
-        pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args);
     }
     pthread_join(main_thread, NULL);
+    destroy_lsb(l);
+    destroy_jobs(total_jobs);
 }

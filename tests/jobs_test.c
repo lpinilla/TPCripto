@@ -87,10 +87,10 @@ void job_division_test_7(){
     carrier c = create_carrier(carr, carrier_size, carrier_size, 1);
     payload p = create_payload(inj, inj_size);
     lsb l = create_lsb(1);
-    jobs j = divide_jobs(l, c, p);
+    jobs j = divide_jobs(l, c, p, c->pixel_width);
     asserts += j->size == 1;
-    asserts += j->carriers[0]->content == carr;
-    asserts += j->payloads[0]->content == inj;
+    asserts += j[0].carrier->content == carr;
+    asserts += j[0].payload->content == inj;
     destroy_carrier(c);
     destroy_payload(p);
     destroy_lsb(l);
@@ -108,10 +108,10 @@ void job_division_test_8(){
     carrier c = create_carrier(carr, carrier_size, carrier_size, 1);
     payload p = create_payload(inj, inj_size);
     lsb l = create_lsb(1);
-    jobs j = divide_jobs(l, c, p);
+    jobs j = divide_jobs(l, c, p, c->pixel_width);
     asserts += j->size == 2;
-    asserts += j->carriers[0]->content == carr;
-    asserts += j->payloads[0]->content == inj;
+    asserts += j[0].carrier->content == carr;
+    asserts += j[0].payload->content == inj;
     destroy_carrier(c);
     destroy_payload(p);
     destroy_lsb(l);
@@ -129,12 +129,12 @@ void job_division_test_9(){
     carrier c = create_carrier(carr, carrier_size, 1, carrier_size);
     payload p = create_payload(inj, inj_size);
     lsb l = create_lsb(1);
-    jobs j = divide_jobs(l, c, p);
+    jobs j = divide_jobs(l, c, p, c->pixel_width);
     j_size = j->size;
     asserts += j_size == 16;
     for(int i = 0; i < j->size; i++){
-        asserts += j->carriers[i]->content == (carr + i * sizeof(uint8_t));
-        asserts += j->payloads[i]->content == (inj + i * sizeof(uint8_t));
+        asserts += j[i].carrier->content == (carr + i * sizeof(uint8_t));
+        asserts += j[i].payload->content == (inj + i * sizeof(uint8_t));
     }
     destroy_carrier(c);
     destroy_payload(p);
@@ -153,12 +153,12 @@ void job_division_test_10(){
     carrier c = create_carrier(carr, carrier_size, carrier_size, 1);
     payload p = create_payload(inj, inj_size);
     lsb l = create_lsb(4);
-    jobs j = divide_jobs(l, c, p);
+    jobs j = divide_jobs(l, c, p, c->pixel_width);
     j_size = j->size;
     asserts += j_size == 1;
     for(int i = 0; i < j->size; i++){
-        asserts += j->carriers[i]->content == (carr + i * sizeof(uint8_t));
-        asserts += j->payloads[i]->content == (inj + i * sizeof(uint8_t));
+        asserts += j[i].carrier->content == (carr + i * sizeof(uint8_t));
+        asserts += j[i].payload->content == (inj + i * sizeof(uint8_t));
     }
     destroy_carrier(c);
     destroy_payload(p);
@@ -177,12 +177,12 @@ void job_division_test_11(){
     carrier c = create_carrier(carr, carrier_size, 1, carrier_size);
     payload p = create_payload(inj, inj_size);
     lsb l = create_lsb(4);
-    jobs j = divide_jobs(l, c, p);
+    jobs j = divide_jobs(l, c, p, c->pixel_width);
     j_size = j->size;
     asserts += j_size == 4;
     for(int i = 0; i < j->size; i++){
-        asserts += j->carriers[i]->content == (carr + i * sizeof(uint8_t));
-        asserts += j->payloads[i]->content == (inj + i * sizeof(uint8_t));
+        asserts += j[i].carrier->content == (carr + i * sizeof(uint8_t));
+        asserts += j[i].payload->content == (inj + i * sizeof(uint8_t));
     }
     destroy_carrier(c);
     destroy_payload(p);
@@ -197,9 +197,11 @@ long create_test(long size, long inj_size, int n, long width, long height){
     lsb l = create_lsb(n);
     payload p = create_payload(inj, inj_size);
     carrier c = create_carrier( (uint8_t *)carr, size, width, height);
-    jobs j = divide_jobs(l, c, p);
-    destroy_carrier(c);
+    jobs j = divide_jobs(l, c, p, width);
     ret = j->size;
+    destroy_carrier(c);
+    destroy_payload(p);
+    destroy_lsb(l);
     destroy_jobs(j);
     return ret;
 }

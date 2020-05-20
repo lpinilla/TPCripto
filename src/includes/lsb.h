@@ -7,6 +7,10 @@
 #include <lsb.h>
 
 #define BYTE_SIZE 8
+#define MAX_THREADS 64
+//valor aleatorio, se puede variar para evaluar la performance
+#define BYTE_INJECTIONS_PER_JOB 256
+
 
 typedef struct t_lsb{
     int n; //La cantidad de bits menos significativos que a manejar.

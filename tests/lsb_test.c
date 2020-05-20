@@ -4,7 +4,9 @@
 #include <carrier.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <jobs.h>
 #include <testing_suite.h>
+#include <pthread.h>
 
 void lsb_creation_test_1();
 void lsb_creation_test_4();
@@ -33,6 +35,12 @@ void worker_lbs_steg_test_3();
 void worker_lbs_steg_test_4();
 void worker_lbs_steg_test_5();
 void worker_lbs_steg_test_6();
+void worker_sub_routine_test();
+void thread_test();
+void thread_test_2();
+void thread_test_3();
+void lsb_steg_test();
+void lsb_steg_test_2();
 
 int main() {
   create_suite("LSB suite");
@@ -63,6 +71,12 @@ int main() {
   add_test(worker_lbs_steg_test_4);
   add_test(worker_lbs_steg_test_5);
   add_test(worker_lbs_steg_test_6);
+  add_named_test(worker_sub_routine_test,NAME_OFF(worker_sub_routine_test));
+  add_named_test(thread_test,NAME_OFF(thread_test));
+  add_named_test(thread_test_2,NAME_OFF(thread_test_2));
+  add_named_test(thread_test_3,NAME_OFF(thread_test_3));
+  add_named_test(lsb_steg_test, NAME_OFF(lsb_steg_test));
+  add_named_test(lsb_steg_test_2, NAME_OFF(lsb_steg_test_2));
   run_suite();
   clear_suite();
 }
@@ -448,15 +462,15 @@ void worker_lbs_steg_test_1() {
   destroy_lsb(l);
   destroy_payload(p);
   destroy_carrier(c);
-    ret += carr[0] == 0;
-    ret += carr[1] == 0;
-    ret += carr[2] == 0;
-    ret += carr[3] == 0;
-    ret += carr[4] == 1;
-    ret += carr[5] == 0;
-    ret += carr[6] == 1;
-    ret += carr[7] == 0;
-    assert_true(ret == size);
+  ret += carr[0] == 0;
+  ret += carr[1] == 0;
+  ret += carr[2] == 0;
+  ret += carr[3] == 0;
+  ret += carr[4] == 1;
+  ret += carr[5] == 0;
+  ret += carr[6] == 1;
+  ret += carr[7] == 0;
+  assert_true(ret == size);
 }
 
 void worker_lbs_steg_test_2() {
@@ -470,15 +484,15 @@ void worker_lbs_steg_test_2() {
   destroy_lsb(l);
   destroy_payload(p);
   destroy_carrier(c);
-    ret += carr[0] == 1;
-    ret += carr[1] == 0;
-    ret += carr[2] == 1;
-    ret += carr[3] == 0;
-    ret += carr[4] == 0;
-    ret += carr[5] == 0;
-    ret += carr[6] == 0;
-    ret += carr[7] == 0;
-    assert_true(ret == size);
+  ret += carr[0] == 1;
+  ret += carr[1] == 0;
+  ret += carr[2] == 1;
+  ret += carr[3] == 0;
+  ret += carr[4] == 0;
+  ret += carr[5] == 0;
+  ret += carr[6] == 0;
+  ret += carr[7] == 0;
+  assert_true(ret == size);
 }
 
 void worker_lbs_steg_test_3() {
@@ -492,15 +506,15 @@ void worker_lbs_steg_test_3() {
   destroy_lsb(l);
   destroy_payload(p);
   destroy_carrier(c);
-    ret += carr[0] == 0xf;
-    ret += carr[1] == 0xf;
-    ret += carr[2] == 0xe;
-    ret += carr[3] == 0xf;
-    ret += carr[4] == 0xf;
-    ret += carr[5] == 0xe;
-    ret += carr[6] == 0xe;
-    ret += carr[7] == 0xe;
-    assert_true(ret == size);
+  ret += carr[0] == 0xf;
+  ret += carr[1] == 0xf;
+  ret += carr[2] == 0xe;
+  ret += carr[3] == 0xf;
+  ret += carr[4] == 0xf;
+  ret += carr[5] == 0xe;
+  ret += carr[6] == 0xe;
+  ret += carr[7] == 0xe;
+  assert_true(ret == size);
 }
 
 void worker_lbs_steg_test_4() {
@@ -514,9 +528,9 @@ void worker_lbs_steg_test_4() {
   destroy_lsb(l);
   destroy_payload(p);
   destroy_carrier(c);
-    ret += carr[0] == 0xad;
-    ret += carr[1] == 0xa8;
-    assert_true(ret == size);
+  ret += carr[0] == 0xad;
+  ret += carr[1] == 0xa8;
+  assert_true(ret == size);
 }
 
 void worker_lbs_steg_test_5() {
@@ -535,13 +549,13 @@ void worker_lbs_steg_test_5() {
   destroy_lsb(l);
   destroy_payload(p);
   destroy_payload(p2);
-    destroy_carrier(c);
-    destroy_carrier(c2);
-    ret += carr[0] == 0x08;
-    ret += carr[1] == 0x0a;
-    ret += carr[2] == 0x03;
-    ret += carr[3] == 0x0b;
-    assert_true(ret == size);
+  destroy_carrier(c);
+  destroy_carrier(c2);
+  ret += carr[0] == 0x08;
+  ret += carr[1] == 0x0a;
+  ret += carr[2] == 0x03;
+  ret += carr[3] == 0x0b;
+  assert_true(ret == size);
 }
 
 void worker_lbs_steg_test_6() {
@@ -563,13 +577,212 @@ carrier c = create_carrier( (uint8_t *)carr, size/2, 1, 1);
   destroy_payload(p);
   destroy_carrier(c);
   destroy_carrier(c2);
-    ret += carr[0] == 0xa8;
-    ret += carr[1] == 0xaa;
-    ret += carr[2] == 0xa3;
-    ret += carr[3] == 0xab;
-    ret += carr[4] == 0xa4;
-    ret += carr[5] == 0xac;
-    ret += carr[6] == 0xa0;
-    ret += carr[7] == 0xa5;
-    assert_true(ret == size);
+  ret += carr[0] == 0xa8;
+  ret += carr[1] == 0xaa;
+  ret += carr[2] == 0xa3;
+  ret += carr[3] == 0xab;
+  ret += carr[4] == 0xa4;
+  ret += carr[5] == 0xac;
+  ret += carr[6] == 0xa0;
+  ret += carr[7] == 0xa5;
+  assert_true(ret == size);
+}
+
+void worker_sub_routine_test(){
+    int carr_size = 8, inj_size = 1, ret = 0;
+    uint8_t carr[carr_size], injection[inj_size];
+    for(int i = 0; i < carr_size; i++) carr[i] = 0;
+    injection[0] = 0xaa;
+    lsb l = create_lsb(1);
+    carrier c = create_carrier( (uint8_t *)carr, carr_size, carr_size, 1);
+    payload p = create_payload(injection, inj_size);
+    t_routine_args args = { .l = l, .c = c, .p = p, .n_of_pixels = c->pixel_width };
+    worker_sub_routine( (void *) &args);
+    ret += carr[0] == 0x1;
+    ret += carr[1] == 0x0;
+    ret += carr[2] == 0x1;
+    ret += carr[3] == 0x0;
+    ret += carr[4] == 0x1;
+    ret += carr[5] == 0x0;
+    ret += carr[6] == 0x1;
+    ret += carr[7] == 0x0;
+    destroy_lsb(l);
+    destroy_carrier(c);
+    destroy_payload(p);
+    assert_true(ret == inj_size * 8);
+}
+
+void thread_test(){
+    int carr_size = 8, inj_size = 1, ret = 0;
+    uint8_t carr[carr_size], injection[inj_size];
+    pthread_t main_thread;
+    for(int i = 0; i < carr_size; i++) carr[i] = 0;
+    injection[0] = 0xaa;
+    lsb l = create_lsb(1);
+    carrier c = create_carrier( (uint8_t *)carr, carr_size, carr_size, 1);
+    payload p = create_payload(injection, inj_size);
+    t_routine_args args = { .l = l, .c = c, .p = p, .n_of_pixels = c->pixel_width };
+    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args);
+    pthread_join(main_thread, NULL);
+    ret += carr[0] == 0x1;
+    ret += carr[1] == 0x0;
+    ret += carr[2] == 0x1;
+    ret += carr[3] == 0x0;
+    ret += carr[4] == 0x1;
+    ret += carr[5] == 0x0;
+    ret += carr[6] == 0x1;
+    ret += carr[7] == 0x0;
+    destroy_lsb(l);
+    destroy_carrier(c);
+    destroy_payload(p);
+    assert_true(ret == inj_size * 8);
+}
+
+void thread_test_2(){
+    int carr_size = 8, inj_size = 1, ret = 0;
+    uint8_t carr[carr_size], injection[inj_size];
+    pthread_t main_thread;
+    for(int i = 0; i < carr_size; i++) carr[i] = 0;
+    injection[0] = 0xaa;
+    lsb l = create_lsb(1);
+    lsb l2 = create_lsb(1);
+    carrier c = create_carrier((uint8_t *)carr, carr_size, carr_size / 2, 1);
+    carrier c2 = create_carrier((uint8_t *)carr + sizeof(uint8_t) * carr_size / 2, carr_size, carr_size / 2, 1);
+    payload p = create_payload(injection, inj_size);
+    payload p2 = create_payload(injection + sizeof(uint8_t) * inj_size / 2 , inj_size);
+    t_routine_args args = { .l = l, .c = c, .p = p, .n_of_pixels = c->pixel_width };
+    t_routine_args args2 = { .l = l2, .c = c2, .p = p2, .n_of_pixels = c->pixel_width};
+    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args);
+    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args2);
+    pthread_join(main_thread, NULL);
+    ret += carr[0] == 0x1;
+    ret += carr[1] == 0x0;
+    ret += carr[2] == 0x1;
+    ret += carr[3] == 0x0;
+    ret += carr[4] == 0x1;
+    ret += carr[5] == 0x0;
+    ret += carr[6] == 0x1;
+    ret += carr[7] == 0x0;
+    destroy_lsb(l);
+    destroy_carrier(c);
+    destroy_payload(p);
+    destroy_lsb(l2);
+    destroy_carrier(c2);
+    destroy_payload(p2);
+    assert_true(ret == carr_size);
+}
+
+void thread_test_3(){
+    int carr_size = 16, inj_size = 2, ret = 0;
+    uint8_t carr[carr_size], injection[inj_size];
+    pthread_t main_thread;
+    for(int i = 0; i < carr_size; i++) carr[i] = 0;
+    injection[0] = 0x97;
+    injection[1] = 0x31;
+    lsb l = create_lsb(1);
+    lsb l2 = create_lsb(1);
+    carrier c = create_carrier((uint8_t *)carr, carr_size / 2, carr_size / 2, 1);
+    carrier c2 = create_carrier((uint8_t *)carr + sizeof(uint8_t) * carr_size /2, carr_size / 2, carr_size/2, 1);
+    payload p = create_payload(injection, inj_size);
+    payload p2 = create_payload(injection + sizeof(uint8_t) * inj_size / 2 , inj_size);
+    t_routine_args args = { .l = l, .c = c, .p = p, .n_of_pixels = c->pixel_width };
+    t_routine_args args2 = { .l = l2, .c = c2, .p = p2, .n_of_pixels = c->pixel_width};
+    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args);
+    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args2);
+    pthread_join(main_thread, NULL);
+    ret += carr[0] == 0x1;
+    ret += carr[1] == 0x0;
+    ret += carr[2] == 0x0;
+    ret += carr[3] == 0x1;
+    ret += carr[4] == 0x0;
+    ret += carr[5] == 0x1;
+    ret += carr[6] == 0x1;
+    ret += carr[7] == 0x1;
+    ret += carr[8] == 0x0;
+    ret += carr[9] == 0x0;
+    ret += carr[10] == 0x1;
+    ret += carr[11] == 0x1;
+    ret += carr[12] == 0x0;
+    ret += carr[13] == 0x0;
+    ret += carr[14] == 0x0;
+    ret += carr[15] == 0x1;
+    destroy_lsb(l);
+    destroy_carrier(c);
+    destroy_payload(p);
+    destroy_lsb(l2);
+    destroy_carrier(c2);
+    destroy_payload(p2);
+    assert_true(ret == carr_size);
+}
+
+void lsb_steg_test(){
+    int carr_size = 24, inj_size = 2, ret = 0;
+    uint8_t carr[carr_size], injection[inj_size];
+    for(int i = 0; i < carr_size; i++) carr[i] = 0;
+    injection[0] = 0x35;
+    injection[1] = 0xba;
+    carrier c = create_carrier( (uint8_t *)carr, carr_size, 8, 3);
+    payload p = create_payload( (uint8_t *)injection, inj_size);
+    lsb_steg(1, c, p);
+    ret += carr[0] == 0;
+    ret += carr[1] == 0;
+    ret += carr[2] == 1;
+    ret += carr[3] == 1;
+    ret += carr[4] == 0;
+    ret += carr[5] == 1;
+    ret += carr[6] == 0;
+    ret += carr[7] == 1;
+    ret += carr[8] == 1;
+    ret += carr[9] == 0;
+    ret += carr[10] == 1;
+    ret += carr[11] == 1;
+    ret += carr[12] == 1;
+    ret += carr[13] == 0;
+    ret += carr[14] == 1;
+    ret += carr[15] == 0;
+    ret += carr[16] == 0;
+    ret += carr[17] == 0;
+    ret += carr[18] == 0;
+    ret += carr[19] == 0;
+    ret += carr[20] == 0;
+    ret += carr[21] == 0;
+    ret += carr[22] == 0;
+    ret += carr[23] == 0;
+    destroy_carrier(c);
+    destroy_payload(p);
+    assert_true(ret == carr_size);
+}
+
+void lsb_steg_test_2(){
+    int carr_size = 20, inj_size = 2, ret = 0;
+    uint8_t carr[carr_size], injection[inj_size];
+    for(int i = 0; i < carr_size; i++) carr[i] = 0;
+    injection[0] = 0x35;
+    injection[1] = 0xba;
+    carrier c = create_carrier( (uint8_t *)carr, carr_size, 4, 5);
+    payload p = create_payload( (uint8_t *)injection, inj_size);
+    lsb_steg(1, c, p);
+    ret += carr[0] == 0;
+    ret += carr[1] == 0;
+    ret += carr[2] == 1;
+    ret += carr[3] == 1;
+    ret += carr[4] == 0;
+    ret += carr[5] == 1;
+    ret += carr[6] == 0;
+    ret += carr[7] == 1;
+    ret += carr[8] == 1;
+    ret += carr[9] == 0;
+    ret += carr[10] == 1;
+    ret += carr[11] == 1;
+    ret += carr[12] == 1;
+    ret += carr[13] == 0;
+    ret += carr[14] == 1;
+    ret += carr[15] == 0;
+    ret += carr[16] == 0;
+    ret += carr[17] == 0;
+    ret += carr[18] == 0;
+    ret += carr[19] == 0;
+    destroy_carrier(c);
+    destroy_payload(p);
+    assert_true(ret == carr_size);
 }
