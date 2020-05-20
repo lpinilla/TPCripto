@@ -12,7 +12,6 @@ hfs process_hf(char* file_name){
   store_file(file_name,hf);
 
   return hf;
-
 }
 
 void store_file(char file_name[],hfs hfs){
