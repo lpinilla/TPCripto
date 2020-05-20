@@ -21,20 +21,20 @@
 typedef struct __attribute__((__packed__)) t_bmp_header {
   uint16_t  type;             // BMP TYPE = 0x4d42
   uint32_t  size;             // File size in bytes
-  uint16_t  reserved1;        // Not used
-  uint16_t  reserved2;        // Not used
+  uint16_t  reserved1;        // 
+  uint16_t  reserved2;        // 
   uint32_t  offset;           // Offset after header (54 bytes)
-  uint32_t  dib_header_size;  // DIB Header size in bytes (40 bytes)
+  uint32_t  dib_header_size;  // BMP Header size in bytes (40 bytes)
   int32_t   width_px;         // Width of the image
   int32_t   height_px;        // Height of image
-  uint16_t  num_planes;       // Number of color planes
+  uint16_t  num_planes;       // 
   uint16_t  bits_per_pixel;   // Bits per pixel
-  uint32_t  compression;      // Compression type = 0 because its not compressed
+  uint32_t  compression;      // Compression  = 0 because its not compressed
   uint32_t  image_size_bytes; // Image size in bytes
-  int32_t   x_resolution_ppm; // Pixels per meter
-  int32_t   y_resolution_ppm; // Pixels per meter
-  uint32_t  num_colors;       // Number of colors
-  uint32_t  important_colors; // Important colors
+  int32_t   x_resolution_ppm; // 
+  int32_t   y_resolution_ppm; // 
+  uint32_t  num_colors;       // 
+  uint32_t  important_colors; // 
 }t_bmp_header;
 
 typedef t_bmp_header * bmp_header;
