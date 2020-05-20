@@ -12,16 +12,18 @@
 
 #define TYPE_OFFSET 0x0000
 #define SIZE_OFFSET 0x0002
+#define OFFSET_OFFSET 0x000A
 #define WIDTH_OFFSET 0x0012
 #define HEIGHT_OFFSET 0x0016
-#define BMP_HEADER_OFFSET 0x0036
+#define IMAGE_SIZE_OFFSET 0x0022
+#define BITS_PER_PIXEL_OFFSET 0x001C
 
-typedef struct t_bmp_header{
+typedef struct __attribute__((__packed__)) t_bmp_header {
   uint16_t  type;             // BMP TYPE = 0x4d42
   uint32_t  size;             // File size in bytes
   uint16_t  reserved1;        // Not used
   uint16_t  reserved2;        // Not used
-  uint32_t  offset;           // Offset to image data in bytes from beginning of file (54 bytes)
+  uint32_t  offset;           // Offset after header (54 bytes)
   uint32_t  dib_header_size;  // DIB Header size in bytes (40 bytes)
   int32_t   width_px;         // Width of the image
   int32_t   height_px;        // Height of image
