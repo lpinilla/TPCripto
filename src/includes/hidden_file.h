@@ -22,6 +22,7 @@ uint32_t file_size(char file_name[]);
 void store_file(char file_name[],hfs hfs);
 uint8_t* analice_name(char* file_name,hfs hfs);
 uint8_t* concat_hf(hfs hf_info);
+void create_file(hfs hfs);
 
 
 

@@ -6,12 +6,27 @@ hfs process_hf(char* file_name){
   hfs hf = (hfs)malloc(sizeof(t_hf));
 
   //size NO INCLUYE ningun \0 cuando termina el texto
-  hf->size=file_size(file_name)-1; //-1 para que no cuente EOF
+  hf->size=file_size(file_name); //tiene en cuenta el EOF
   hf->file=malloc(hf->size * sizeof(uint8_t));
   hf->ext=analice_name(file_name,hf);
   store_file(file_name,hf);
 
   return hf;
+}
+
+void create_file(hfs hfs){
+  char* file_name;
+  //uint8_t* new_file;
+
+  file_name=malloc(strlen("new_file")+hfs->ext_size);
+  memcpy(file_name+strlen("new_file"),hfs->ext,hfs->ext_size);
+  printf("fle name: %s\n",file_name);
+
+  //new_file=malloc(hfs->size);
+
+  FILE *f = fopen(file_name, "wb");
+  fwrite(hfs->file, sizeof(uint8_t), hfs->size, f);
+  return;
 }
 
 void store_file(char file_name[],hfs hfs){
@@ -24,11 +39,11 @@ FILE* fp = fopen(file_name, "r");
       return;
   }
 
-  uint32_t count=fread(hfs->file,sizeof(uint8_t),hfs->size,fp);
+  uint32_t count=fread(hfs->file,sizeof(uint8_t),hfs->size-1,fp);
 
   fclose(fp);
 
-  if(count!= hfs->size){
+  if(count!= hfs->size-1){
     printf("An error has occurd during reading file\n");
     return ;
   }
