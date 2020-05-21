@@ -29,7 +29,14 @@ int main()
 void hidden_file_create(){
   hfs test = (hfs)malloc(sizeof(t_hf));
   test = process_hf("test1.txt");
-
+  char* s="(1)";
+  //para el test, le cambio el nombre a nombre_original(1) para saber si la creacion fue correcta
+  char* new_name=malloc(strlen(test->file_name)+3);
+  memcpy(new_name,test->file_name,strlen(test->file_name));
+  memcpy(new_name+strlen(test->file_name),s,4);
+  test->file_name=malloc(strlen(new_name));
+  test->file_name=new_name;
+  
   create_file(test);
 
 }
@@ -54,16 +61,22 @@ void hidden_file_bmp_procces()
   hfs test = (hfs)malloc(sizeof(t_hf));
   test = process_hf("ladoLSB1.bmp");
   
-    if (test->size != bmph->size)
+  if (test->size != bmph->size)
   { 
+    printf("aca\n");
     assert_true(1 == 0);
   }
   if (strncmp((char *)test->ext, ext, strlen(ext)))
   {
+
+        printf("aca1 %s %ld\n",(char *)test->ext,strlen(ext));
+
     assert_true(1 == 0);
   }
   if (!(memcmp(bmpf->data,test->file,bmph->size)))
   {
+        printf("aca2\n");
+
     assert_true(1 == 0);
   }
   assert_true(1 == 1);

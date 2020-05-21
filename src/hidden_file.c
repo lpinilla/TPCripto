@@ -10,12 +10,9 @@ hfs process_hf(char *file_name)
   hf->file = malloc(hf->size * sizeof(uint8_t));
   hf->ext = analice_name(file_name, hf);
 
-  hf->file_name = malloc(strlen(file_name)+3);
+  hf->file_name = malloc(strlen(file_name)+1); //+1 para el /0
   
-  memcpy(hf->file_name, file_name, strlen(file_name));
-  //printf("file name: %s %ld\n",hf->file_name,strlen(hf->file_name));
-  memcpy(hf->file_name+strlen(file_name),"(1)",3);
-  //  printf("file name: %s %ld\n",hf->file_name,strlen(hf->file_name));
+  memcpy(hf->file_name, file_name, strlen(file_name)+1);
 
   store_file(file_name ,hf);
 
@@ -77,8 +74,8 @@ uint8_t *analice_name(char *file_name, hfs hfs)
     hfs->ext_size = j;
   }
   extencion = malloc(j + 1);
-  memcpy(extencion, ext, s);
-  return extencion;
+  memcpy(extencion, ext, s+1); //s no cuenta el \0
+ return extencion;
 }
 
 //tiene en cuenta el EOF. Lo resto cuando lo asigno en la struct
