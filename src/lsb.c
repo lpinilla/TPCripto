@@ -76,17 +76,11 @@ void * worker_sub_routine(void * args){
 void lsb_steg(int n, carrier c, payload p){
     if(n <= 0 || c == NULL || p == NULL) return;
     int n_threads = 0;
-    //long n_of_pixels = 0;
-    //long payload_reminder = p->size % BYTE_INJECTIONS_PER_JOB;
     lsb l = create_lsb(n);
     jobs total_jobs = divide_jobs(l, c, p, BYTE_INJECTIONS_PER_JOB);
     pthread_t main_thread;
     t_routine_args args[MAX_THREADS];
     for(long i=0; i < total_jobs->size; i++){
-        //n_of_pixels = BYTE_INJECTIONS_PER_JOB;
-        //if(i == (total_jobs->size - 1)){
-        //    n_of_pixels = (payload_reminder == 0)? BYTE_INJECTIONS_PER_JOB : payload_reminder;
-        //}
         args[i].l = l;
         args[i].c = (carrier) total_jobs[i].carrier;
         args[i].p = (payload) total_jobs[i].payload;
@@ -102,4 +96,31 @@ void lsb_steg(int n, carrier c, payload p){
     pthread_join(main_thread, NULL);
     destroy_lsb(l);
     destroy_jobs(total_jobs);
+}
+
+uint8_t extract_byte(lsb l, carrier c){
+    uint8_t ret = 0;
+    int bytes_needed = sizeof(uint8_t) * BYTE_SIZE / l->n;
+    for(int i = 0; i < bytes_needed; i++){
+        ret ^= (c->content[i] & l->c_mask) << (l->shift_val - l->n * i);
+    }
+    c->content += bytes_needed;
+    return ret;
+}
+
+uint32_t extract_payload_size(lsb l, carrier c){
+    uint32_t ret = 0;
+    for(int i = 0; i < (BYTE_SIZE / 2); i++){
+        ret ^= extract_byte(l, c) << (BYTE_SIZE / 2 - i - 1);
+    }
+    return ret;
+}
+
+payload extract_payload(lsb l, carrier c){
+    if(l == NULL || c == NULL) return NULL;
+    payload p = (payload) malloc(sizeof(t_payload));
+    p->size = extract_payload_size(l, c);
+    p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size);
+    for(int i = 0; i < p->size; i++) p->content[i] = extract_byte(l, c);
+    return p;
 }

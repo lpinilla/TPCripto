@@ -38,6 +38,15 @@ void destroy_lsb(lsb l);
 //función para inyectar el bit según la máscara en la imágen portadora.
 void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used);
 
+//función para recuperar un byte del archivo portador (consumiendolo)
+uint8_t extract_byte(lsb l, carrier c);
+
+//función para hayar el tamaño del payload a recuperar
+uint32_t extract_payload_size(lsb l, carrier c);
+
+//función para recuperar un objeto payload del carrier en base a un lsb
+payload extract_payload(lsb l, carrier c);
+
 //función para realizar la steganografía.
 void worker_lsb_steg(lsb l, carrier c, payload p, long n_of_pixels);
 
