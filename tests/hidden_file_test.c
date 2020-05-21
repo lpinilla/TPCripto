@@ -11,6 +11,7 @@ void hidden_file_ext();
 void hidden_file_procces();
 void hidden_file_bmp();
 void hidden_file_bmp_procces();
+void hidden_file_create();
 int main()
 {
   create_suite("Hidden File test");
@@ -20,8 +21,17 @@ int main()
   add_test(hidden_file_procces);
   add_test(hidden_file_bmp);
   add_test(hidden_file_bmp_procces);
+  add_test(hidden_file_create);
   run_suite();
   clear_suite();
+}
+
+void hidden_file_create(){
+  hfs test = (hfs)malloc(sizeof(t_hf));
+  test = process_hf("test1.txt");
+
+  create_file(test);
+
 }
 
 void hidden_file_bmp()

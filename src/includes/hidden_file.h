@@ -12,6 +12,7 @@ typedef struct hf{
   uint8_t* file; //data in file
   uint8_t* ext; //file extencion with . and \0
   uint8_t ext_size;
+  char* file_name;
 }t_hf;
 
 //hidden_file structure
