@@ -84,10 +84,10 @@ int main() {
   //add_test(worker_lbs_steg_test_4);
   //add_test(worker_lbs_steg_test_5);
   //add_test(worker_lbs_steg_test_6);
-  //add_named_test(worker_subroutine_test,NAME_OFF(worker_subroutine_test));
-  //add_named_test(thread_test,NAME_OFF(thread_test));
-  //add_named_test(thread_test_2,NAME_OFF(thread_test_2));
-  //add_named_test(thread_test_3,NAME_OFF(thread_test_3));
+  add_named_test(worker_subroutine_test,NAME_OFF(worker_subroutine_test));
+  add_named_test(thread_test,NAME_OFF(thread_test));
+  add_named_test(thread_test_2,NAME_OFF(thread_test_2));
+  add_named_test(thread_test_3,NAME_OFF(thread_test_3));
   //add_named_test(lsb_steg_test, NAME_OFF(lsb_steg_test));
   //add_named_test(lsb_steg_test_2, NAME_OFF(lsb_steg_test_2));
   //add_named_test(lsb_steg_test_3, NAME_OFF(lsb_steg_test_3));
@@ -100,9 +100,9 @@ int main() {
   //add_named_test(extract_payload_size_test_2, NAME_OFF(extract_payload_size_test_2));
   //add_named_test(extract_payload_size_test_3, NAME_OFF(extract_payload_size_test_3));
   //add_named_test(extract_payload_size_test_4, NAME_OFF(extract_payload_size_test_4));
-  add_named_test(extract_payload_test, NAME_OFF(extract_payload_test));
-  add_named_test(extract_payload_test_2, NAME_OFF(extract_payload_test_2));
-  add_named_test(extract_payload_test_3, NAME_OFF(extract_payload_test_3));
+  //add_named_test(extract_payload_test, NAME_OFF(extract_payload_test));
+  //add_named_test(extract_payload_test_2, NAME_OFF(extract_payload_test_2));
+  //add_named_test(extract_payload_test_3, NAME_OFF(extract_payload_test_3));
   run_suite();
   clear_suite();
 }

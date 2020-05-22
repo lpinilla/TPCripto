@@ -72,6 +72,23 @@ void * worker_sub_routine(void * args){
     return NULL;
 }
 
+uint8_t extract_byte(lsb l, carrier c){
+    uint8_t ret = 0;
+    int bytes_needed = sizeof(uint8_t) * BYTE_SIZE / l->n;
+    for(int i = 0; i < bytes_needed; i++){
+        ret ^= (c->content[i] & l->c_mask) << (l->shift_val - l->n * i);
+    }
+    c->content += bytes_needed;
+    return ret;
+}
+
+uint32_t extract_payload_size(lsb l, carrier c){
+    uint32_t ret = 0;
+    for(int i = 0; i < (BYTE_SIZE / 2); i++){
+        ret ^= extract_byte(l, c) << (BYTE_SIZE / 2 - i - 1);
+    }
+    return ret;
+}
 
 void lsb_steg(int n, carrier c, payload p){
     if(n <= 0 || c == NULL || p == NULL) return;
@@ -98,23 +115,17 @@ void lsb_steg(int n, carrier c, payload p){
     destroy_jobs(total_jobs);
 }
 
-uint8_t extract_byte(lsb l, carrier c){
-    uint8_t ret = 0;
-    int bytes_needed = sizeof(uint8_t) * BYTE_SIZE / l->n;
-    for(int i = 0; i < bytes_needed; i++){
-        ret ^= (c->content[i] & l->c_mask) << (l->shift_val - l->n * i);
-    }
-    c->content += bytes_needed;
-    return ret;
+uint8_t lsb_i_hop(lsb l, carrier c){
+    uint8_t hop_byte = extract_byte(l, c), ret = 0;
+    for(int i=(BYTE_SIZE - 1); !ret && i >= 0; i++) ret = hop_byte & (1 << i);
+    return (!ret)? 256: ret;
 }
 
-uint32_t extract_payload_size(lsb l, carrier c){
-    uint32_t ret = 0;
-    for(int i = 0; i < (BYTE_SIZE / 2); i++){
-        ret ^= extract_byte(l, c) << (BYTE_SIZE / 2 - i - 1);
-    }
-    return ret;
-}
+/*void lsb_i_steg(carrier c, payload p){
+    lsb l = create_lsb(1);
+    uint8_t hop_value = lsb_i_hop(l, c);
+    destroy_lsb(l);
+}*/
 
 payload extract_payload(lsb l, carrier c){
     if(l == NULL || c == NULL) return NULL;

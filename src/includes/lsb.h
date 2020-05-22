@@ -33,7 +33,11 @@ lsb create_lsb(int n);
 
 void destroy_lsb(lsb l);
 
-//int payload_fit_test(long carrier_size, long payload_size);
+//Steagnografía con lsb-n (sin incluír lsb-i)
+void lsb_steg(int n, carrier c, payload p);
+
+//LSB Improved
+void lsb_i_steg(carrier c, payload p);
 
 //función para inyectar el bit según la máscara en la imágen portadora.
 void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used);
@@ -52,8 +56,5 @@ void worker_lsb_steg(lsb l, carrier c, payload p, long n_of_pixels);
 
 //wrapper de worker_lsb_steg para poder ser usado con threads
 void * worker_sub_routine(void * args);
-
-//Steagnografía con lsb-n (sin incluír lsb-i)
-void lsb_steg(int n, carrier c, payload p);
 
 #endif
