@@ -57,4 +57,10 @@ void worker_lsb_steg(lsb l, carrier c, payload p, long n_of_pixels);
 //wrapper de worker_lsb_steg para poder ser usado con threads
 void * worker_sub_routine(void * args);
 
+//función que se encarga de calcular el hop value de la imagen
+uint8_t lsb_i_hop(lsb l, carrier c);
+
+//función para inyectar un byte con lsbi en la imagen portadora dado un numero de saltos hop
+void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop);
+
 #endif

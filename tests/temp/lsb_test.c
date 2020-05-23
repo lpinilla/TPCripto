@@ -51,6 +51,8 @@ void extract_payload_size_test();
 void extract_payload_size_test_2();
 void extract_payload_size_test_3();
 void extract_payload_size_test_4();
+void extract_payload_size_test_5();
+void extract_payload_size_test_6();
 void extract_payload_test();
 void extract_payload_test_2();
 void extract_payload_test_3();
@@ -84,10 +86,10 @@ int main() {
   //add_test(worker_lbs_steg_test_4);
   //add_test(worker_lbs_steg_test_5);
   //add_test(worker_lbs_steg_test_6);
-  add_named_test(worker_subroutine_test,NAME_OFF(worker_subroutine_test));
-  add_named_test(thread_test,NAME_OFF(thread_test));
-  add_named_test(thread_test_2,NAME_OFF(thread_test_2));
-  add_named_test(thread_test_3,NAME_OFF(thread_test_3));
+  //add_named_test(worker_subroutine_test,NAME_OFF(worker_subroutine_test));
+  //add_named_test(thread_test,NAME_OFF(thread_test));
+  //add_named_test(thread_test_2,NAME_OFF(thread_test_2));
+  //add_named_test(thread_test_3,NAME_OFF(thread_test_3));
   //add_named_test(lsb_steg_test, NAME_OFF(lsb_steg_test));
   //add_named_test(lsb_steg_test_2, NAME_OFF(lsb_steg_test_2));
   //add_named_test(lsb_steg_test_3, NAME_OFF(lsb_steg_test_3));
@@ -100,9 +102,12 @@ int main() {
   //add_named_test(extract_payload_size_test_2, NAME_OFF(extract_payload_size_test_2));
   //add_named_test(extract_payload_size_test_3, NAME_OFF(extract_payload_size_test_3));
   //add_named_test(extract_payload_size_test_4, NAME_OFF(extract_payload_size_test_4));
+  add_named_test(extract_payload_size_test_5, NAME_OFF(extract_payload_size_test_5));
   //add_named_test(extract_payload_test, NAME_OFF(extract_payload_test));
   //add_named_test(extract_payload_test_2, NAME_OFF(extract_payload_test_2));
   //add_named_test(extract_payload_test_3, NAME_OFF(extract_payload_test_3));
+
+
   run_suite();
   clear_suite();
 }
@@ -976,6 +981,44 @@ void extract_payload_size_test_3(){
 }
 
 void extract_payload_size_test_4(){
+    int carr_size = 32;
+    uint8_t carr[carr_size], ret = 0;
+    carrier c = create_carrier(carr, carr_size, 1, carr_size);
+    lsb l = create_lsb(4);
+    for(int i = 0; i < carr_size; i++) carr[i] = 0;
+    carr[(4 * BYTE_SIZE/ l->n) - 1] = 1;
+    ret = extract_payload_size(l, c);
+    destroy_lsb(l);
+    destroy_carrier(c);
+    assert_true(ret == 1);
+}
+
+void extract_payload_size_test_5(){
+    int carr_size = 32;
+    uint8_t carr[carr_size];
+    uint32_t ret = 0;
+    carrier c = create_carrier(carr, carr_size, 1, carr_size);
+    lsb l = create_lsb(1);
+    for(int i = 0; i < carr_size; i++) carr[i] = 0;
+    carr[17] = 1;
+    carr[22] = 1;
+    carr[24] = 1;
+    carr[25] = 1;
+    carr[27] = 1;
+    carr[28] = 1;
+    carr[29] = 1;
+    carr[30] = 1;
+    for(int i = 0; i < carr_size; i++){
+        printf("%d ", carr[i]);
+    }
+    printf("\n");
+    ret = extract_payload_size(l, c);
+    destroy_lsb(l);
+    destroy_carrier(c);
+    assert_true(ret == 17118);
+}
+
+void extract_payload_size_test_6(){
     int carr_size = 32;
     uint8_t carr[carr_size], ret = 0;
     carrier c = create_carrier(carr, carr_size, 1, carr_size);

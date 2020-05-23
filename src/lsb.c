@@ -83,11 +83,18 @@ uint8_t extract_byte(lsb l, carrier c){
 }
 
 uint32_t extract_payload_size(lsb l, carrier c){
-    uint32_t ret = 0;
-    for(int i = 0; i < (BYTE_SIZE / 2); i++){
-        ret ^= extract_byte(l, c) << (BYTE_SIZE / 2 - i - 1);
-    }
-    return ret;
+    uint8_t bytes[4] = {0, 0, 0, 0};
+    for(int i = 0; i < (BYTE_SIZE / 2); i++) bytes[i] = extract_byte(l, c);
+    return (bytes[0] << 24) ^(bytes[1] << 16) ^(bytes[2] << 8)  ^bytes[3];
+}
+
+payload extract_payload(lsb l, carrier c){
+    if(l == NULL || c == NULL) return NULL;
+    payload p = (payload) malloc(sizeof(t_payload));
+    p->size = extract_payload_size(l, c);
+    p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size);
+    for(int i = 0; i < p->size; i++) p->content[i] = extract_byte(l, c);
+    return p;
 }
 
 void lsb_steg(int n, carrier c, payload p){
@@ -121,17 +128,21 @@ uint8_t lsb_i_hop(lsb l, carrier c){
     return (!ret)? 256: ret;
 }
 
-/*void lsb_i_steg(carrier c, payload p){
+void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop){
+    for(int i = 0; i < BYTE_SIZE; i++){
+        inject_bit(l, c, i_byte, i);
+        c->content += sizeof(uint8_t) * (hop + 1);
+    }
+}
+
+void lsb_i_steg(carrier c, payload p){
     lsb l = create_lsb(1);
     uint8_t hop_value = lsb_i_hop(l, c);
+    uint8_t byte_to_inject = 0;
+    long bytes_needed = p->size * (BYTE_SIZE/ l->n);
+    for(long i = 0; i < bytes_needed; i++){
+        byte_to_inject = get_next_byte(p);
+        inject_lsbi_byte(l, c, byte_to_inject, hop_value);
+    }
     destroy_lsb(l);
-}*/
-
-payload extract_payload(lsb l, carrier c){
-    if(l == NULL || c == NULL) return NULL;
-    payload p = (payload) malloc(sizeof(t_payload));
-    p->size = extract_payload_size(l, c);
-    p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size);
-    for(int i = 0; i < p->size; i++) p->content[i] = extract_byte(l, c);
-    return p;
 }

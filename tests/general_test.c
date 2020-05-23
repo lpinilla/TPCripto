@@ -9,6 +9,7 @@
 #include <testing_suite.h>
 #include <string.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 
 void lsb_1();
 
@@ -22,23 +23,16 @@ int main()
 
 void lsb_1()
 {
-    uint32_t s;
-    bmp_file bmp_f = read_bmp("ladoLSB1.bmp");
+    bmp_file bmp_f = read_bmp("ladoLSB4.bmp");
     bmp_header bmp_h = bmp_f->header;
-
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-    lsb l = create_lsb(1);
-
+    lsb l = create_lsb(4);
     payload p = extract_payload(l, c);
-
-    FILE *f = fopen("miicapa", "w");
-    s=extract_payload_size(l,c);
-    fwrite(p->content, sizeof(uint8_t), s, f);
-
+    FILE *f = fopen("original", "w");
+    fwrite(p->content, sizeof(uint8_t), p->size, f);
     fclose(f);
     destroy_lsb(l);
     destroy_carrier(c);
     destroy_payload(p);
-
     assert_true(1 == 1);
 }
