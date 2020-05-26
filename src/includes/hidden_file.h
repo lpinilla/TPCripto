@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 typedef struct hf{
-  uint32_t size; //size of file 4 bytes
+  uint32_t size; //size of file 4 bytes sin contar EOF
   uint8_t* file; //data in file
   uint8_t* ext; //file extencion with . and \0
-  uint8_t ext_size;
+  uint8_t ext_size; //size of extencion sin contar \0
   char* file_name;
 }t_hf;
 
