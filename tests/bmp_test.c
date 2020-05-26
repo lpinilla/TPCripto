@@ -6,15 +6,43 @@
 
 void bmp_size_test();
 void bmp_create_test();
+void bmp_size_test_example1();
 
 int main()
 {
   create_suite("BMP test");
-  add_test(bmp_size_test);
+   add_test(bmp_size_test);
   add_test(bmp_create_test);
+  //add_test(bmp_size_test_example1);
   run_suite();
   clear_suite();
 }
+
+// void bmp_size_test_example1()
+// {
+//   bmp_file bmpf = read_bmp("example1.BMP");
+//   uint32_t size = 786486; //sacado del archivo
+//   int32_t width = 1024;    //sacado dela archivo
+//   int32_t heigh = 768;    //sacado del archivo
+//   bmp_header bmph = bmpf->header;
+//   printf("size %d %d %d %d\n",bmph->size,bmph->image_size_bytes,bmph->width_px,bmph->height_px);
+//   if (size != bmph->size)
+//   {
+//     assert_true(1 == 0);
+//   }
+//   if (width != bmph->width_px)
+//   {
+//     assert_true(1 == 0);
+//   }
+//   if (heigh != bmph->height_px)
+//   {
+//     assert_true(1 == 0);
+//   }
+
+//   assert_true(1 == 1);
+// }
+
+
 
 void bmp_size_test()
 {
@@ -23,6 +51,7 @@ void bmp_size_test()
   int32_t width = 640;    //sacado dela archivo
   int32_t heigh = 480;    //sacado del archivo
   bmp_header bmph = bmpf->header;
+
   if (size != bmph->size)
   {
     assert_true(1 == 0);
