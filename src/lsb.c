@@ -72,28 +72,48 @@ void * worker_sub_routine(void * args){
     return NULL;
 }
 
-uint8_t extract_byte(lsb l, carrier c){
+uint8_t extract_byte(lsb l, carrier c, int hop_value){
     uint8_t ret = 0;
     int bytes_needed = sizeof(uint8_t) * BYTE_SIZE / l->n;
     for(int i = 0; i < bytes_needed; i++){
-        ret ^= (c->content[i] & l->c_mask) << (l->shift_val - l->n * i);
+        ret ^= (c->content[i] & l->c_mask) << (l->shift_val - l->n*i);
+        if(hop_value) c->content += (sizeof(uint8_t) * hop_value) - 1;
     }
     c->content += bytes_needed;
     return ret;
 }
 
-uint32_t extract_payload_size(lsb l, carrier c){
-    uint8_t bytes[4] = {0, 0, 0, 0};
-    for(int i = 0; i < (BYTE_SIZE / 2); i++) bytes[i] = extract_byte(l, c);
-    return (bytes[0] << 24) ^(bytes[1] << 16) ^(bytes[2] << 8)  ^bytes[3];
+uint8_t extract_byte_lsbi(lsb l, carrier c, int hop_value){
+    uint8_t ret = 0;
+    int bytes_needed = sizeof(uint8_t) * BYTE_SIZE / l->n;
+    for(int i = 0; i < bytes_needed; i++){
+        //ret ^= (c->content[(i*hop_value*3)%c->c_size] & l->c_mask) <<
+        //       (l->shift_val - l->n*i);
+        ret ^= (*(c->content + ((i * hop_value * 3) % c->c_size) ) &
+                l->c_mask) << (l->shift_val - l->n*i);
+
+    }
+    return ret;
+}
+
+uint32_t extract_payload_size(lsb l, carrier c, int hop){
+    uint8_t bytes[BYTE_SIZE / 2] = {0, 0, 0, 0};
+    for(int i = 0; i < (BYTE_SIZE/2); i++){
+        if(hop){
+            bytes[i] = extract_byte_lsbi(l,c, hop);
+        }else{
+            bytes[i] = extract_byte(l,c, 0);
+        }
+    }
+    return (bytes[0] << 24) ^ (bytes[1] << 16) ^ (bytes[2] << 8) ^ bytes[3];
 }
 
 payload extract_payload(lsb l, carrier c){
     if(l == NULL || c == NULL) return NULL;
     payload p = (payload) malloc(sizeof(t_payload));
-    p->size = extract_payload_size(l, c);
+    p->size = extract_payload_size(l, c, 0);
     p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size);
-    for(int i = 0; i < p->size; i++) p->content[i] = extract_byte(l, c);
+    for(int i = 0; i < p->size; i++) p->content[i] = extract_byte(l, c, 0);
     return p;
 }
 
@@ -122,9 +142,10 @@ void lsb_steg(int n, carrier c, payload p){
     destroy_jobs(total_jobs);
 }
 
-uint8_t lsb_i_hop(lsb l, carrier c){
-    uint8_t hop_byte = extract_byte(l, c), ret = 0;
+uint8_t get_lsbi_hop(carrier c){
+    uint8_t hop_byte = *c->content, ret = 0;
     for(int i=(BYTE_SIZE - 1); !ret && i >= 0; i++) ret = hop_byte & (1 << i);
+    c->content += sizeof(uint8_t);
     return (!ret)? 256: ret;
 }
 
@@ -137,7 +158,7 @@ void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop){
 
 void lsb_i_steg(carrier c, payload p){
     lsb l = create_lsb(1);
-    uint8_t hop_value = lsb_i_hop(l, c);
+    uint8_t hop_value = get_lsbi_hop(c);
     uint8_t byte_to_inject = 0;
     long bytes_needed = p->size * (BYTE_SIZE/ l->n);
     for(long i = 0; i < bytes_needed; i++){
@@ -145,4 +166,21 @@ void lsb_i_steg(carrier c, payload p){
         inject_lsbi_byte(l, c, byte_to_inject, hop_value);
     }
     destroy_lsb(l);
+}
+
+payload extract_payload_lsbi(carrier c){
+    if(c == NULL) return NULL;
+    lsb l = create_lsb(1);
+    uint8_t hop= get_lsbi_hop(c);
+    c->content += sizeof(uint8_t) * 5; //ignorando el byte de la llave
+    printf("hop: %d \n", hop);
+    payload p = (payload) malloc(sizeof(t_payload));
+    uint32_t payload_size = extract_payload_size(l, c, hop);
+    //lsb1 size 44886
+    printf("size: %d \n", payload_size);
+    p->size = payload_size;
+    //p->content = (uint8_t *) malloc(sizeof(uint8_t) * payload_size);
+    //for(long i =0; i < p->size; i++) p->content[i] = extract_byte_lsbi(l,c,hop);
+    destroy_lsb(l);
+    return p;
 }
