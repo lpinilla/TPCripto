@@ -28,13 +28,15 @@ typedef struct{
     long n_of_pixels;
 }t_routine_args;
 
+typedef t_routine_args * routine_args;
+
 
 lsb create_lsb(int n);
 
 void destroy_lsb(lsb l);
 
 //Steagnografía con lsb-n (sin incluír lsb-i)
-void lsb_steg(int n, carrier c, payload p);
+void lsb_steg(lsb l, carrier c, payload p);
 
 //función para recuperar un objeto payload del carrier en base a un lsb
 payload extract_payload(lsb l, carrier c);
@@ -48,8 +50,8 @@ payload extract_payload_lsbi(carrier c);
 //función para inyectar el bit según la máscara en la imágen portadora.
 void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used);
 
-//función para recuperar un byte del archivo portador (consumiendolo) utilizando un valor de hop en caso de ser necesario
-uint8_t extract_byte(lsb l, carrier c, int hope);
+//función para recuperar un byte del archivo portador (consumiendolo)
+uint8_t extract_byte(lsb l, carrier c);
 
 //función para hayar el tamaño del payload a recuperar utilizando un valor de hop en caso de ser necesario
 uint32_t extract_payload_size(lsb l, carrier c, int hop_value);
