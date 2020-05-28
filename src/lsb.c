@@ -121,7 +121,7 @@ void lsb_steg(lsb l, carrier c, payload p){
         args[i].l = l;
         args[i].c = (carrier) total_jobs[i].carrier;
         args[i].p = (payload) total_jobs[i].payload;
-        args[i].n_of_pixels = BYTE_INJECTIONS_PER_JOB * 8;
+        args[i].n_of_pixels = BYTE_INJECTIONS_PER_JOB * BYTE_SIZE/ l->n;
         pthread_create(&threads[i], NULL, worker_sub_routine, (void *) &args[i]);
     }
     for(long i = 0; i < total_jobs->size;i++) pthread_join(threads[i],NULL);

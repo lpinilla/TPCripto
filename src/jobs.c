@@ -9,8 +9,6 @@
 
 
 jobs divide_jobs(lsb l, carrier c, payload p, int injections_per_job){
-    int pixels_needed = p->size * (BYTE_SIZE / l->n);
-    pixels_needed++;
     long jobs_needed = (long) ceil((float) p->size/injections_per_job);
     jobs ret = (jobs) malloc(sizeof(t_jobs) * jobs_needed);
     ret->size = jobs_needed;
@@ -19,7 +17,7 @@ jobs divide_jobs(lsb l, carrier c, payload p, int injections_per_job){
     for(long i = 0; i < jobs_needed; i++){
         //generando los carriers
         temp_carrier = (carrier) malloc(sizeof(t_carrier));
-        temp_carrier->content = c->content + i * injections_per_job * 8;
+        temp_carrier->content = c->content + i*injections_per_job* BYTE_SIZE/ l->n;
         temp_carrier->counter = 0;
         temp_carrier->c_size = (c->c_size % injections_per_job == 0)? injections_per_job : c->c_size;
         ret[i].carrier = temp_carrier;
