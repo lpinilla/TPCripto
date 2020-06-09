@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <openssl/conf.h>
 #include <stdint.h>
+#include <payload.h>
+
 
 typedef struct hf{
   uint32_t size; //size of file 4 bytes sin contar EOF
@@ -24,6 +26,7 @@ void store_file(char file_name[],hfs hfs);
 uint8_t* analice_name(char* file_name,hfs hfs);
 uint8_t* concat_hf(hfs hf_info);
 void create_file(hfs hfs);
+void payload_ext(payload p);
 
 
 
