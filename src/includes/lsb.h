@@ -10,6 +10,7 @@
 #define MAX_THREADS 64
 //valor aleatorio, se puede variar para evaluar la performance
 #define BYTE_INJECTIONS_PER_JOB 256
+#define KEY_SIZE 48
 
 
 typedef struct t_lsb{
@@ -45,7 +46,7 @@ payload extract_payload(lsb l, carrier c);
 void lsb_i_steg(carrier c, payload p);
 
 //función para recuperar un objeto payload del carrier con lsb-i
-payload extract_payload_lsbi(carrier c);
+payload extract_payload_lsbi(carrier c, uint8_t * rc4_key);
 
 //función para inyectar el bit según la máscara en la imágen portadora.
 void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used);
