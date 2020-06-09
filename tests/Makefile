@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=c18 -I ../src/includes/ -I ../Tasteful -pthread -Wno-nonnull-compare
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=c18 -I ../src/includes/ -I ../Tasteful -pthread -Wno-nonnull-compare -g
 CLIBRARIES = -lssl -lcrypto
 LIB = testing_suite.c
 SOURCES = $(filter-out ../src/main.c, $(wildcard ../src/*.c))

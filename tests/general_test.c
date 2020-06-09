@@ -22,20 +22,21 @@ void lsb4_insert_3();
 void lsb1_insert_image();
 void lsb4_insert_image();
 void lsb4_insert();
+void definitive_1();
 
 int main()
 {
     create_suite("General Test");
     //add_test(lsb_1);
     //add_test(lsb_4);
-    add_test(lsb1_insert);
-    add_test(lsb4_insert);
-    add_test(lsb1_insert_2);
-    add_test(lsb1_insert_3);
-    add_test(lsb4_insert_3);
-    add_test(lsb1_insert_image);
-    add_test(lsb4_insert_image);
-
+    //add_test(lsb1_insert);
+    //add_test(lsb4_insert);
+    //add_test(lsb1_insert_2);
+    //add_test(lsb1_insert_3);
+    //add_test(lsb4_insert_3);
+    //add_test(lsb1_insert_image);
+    //add_test(lsb4_insert_image);
+    add_test(definitive_1);
     //add_test(lsb_1_4_test(1));
 
     run_suite();
@@ -66,6 +67,22 @@ void lsb_4()
     lsb l = create_lsb(4);
     payload p = extract_payload(l, c);
     FILE *f = fopen("lbs4_extra_prueba.png", "w");
+    fwrite(p->content, sizeof(uint8_t), p->size, f);
+    fclose(f);
+    destroy_lsb(l);
+    destroy_carrier(c);
+    destroy_payload(p);
+    assert_true(1 == 1);
+}
+
+void definitive_1()
+{
+    bmp_file bmp_f = read_bmp("../../definitivos/roma.bmp");
+    bmp_header bmp_h = bmp_f->header;
+    carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
+    lsb l = create_lsb(1);
+    payload p = extract_payload(l, c);
+    FILE *f = fopen("lsb1_unsteg.png", "w");
     fwrite(p->content, sizeof(uint8_t), p->size, f);
     fclose(f);
     destroy_lsb(l);

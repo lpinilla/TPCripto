@@ -78,14 +78,15 @@ uint8_t extract_byte(lsb l, carrier c){
     return ret;
 }
 
-uint8_t extract_byte_lsbi(lsb l, carrier c, int hop_value){
+uint8_t extract_byte_lsbi(lsb l, carrier c, int hop_value, int i){
     uint8_t ret = 0;
     int bytes_needed = sizeof(uint8_t) * BYTE_SIZE / l->n;
-    for(int i = 0; i < bytes_needed; i++){
-        //ret ^= (c->content[(i*hop_value*3)%c->c_size] & l->c_mask) <<
-        //       (l->shift_val - l->n*i);
-        ret ^= (*(c->content + ((i * hop_value * 3) % c->c_size) ) &
-                l->c_mask) << (l->shift_val - l->n*i);
+    for(int j = 0; j < bytes_needed; j++){
+        ret ^=
+            (c->content[( (i * bytes_needed + j ) * hop_value) %c->c_size]
+            & l->c_mask) << (l->shift_val - l->n*j);
+        //ret ^= (*(c->content + ((j * hop_value) % c->c_size) ) &
+        //        l->c_mask) << (l->shift_val - l->n*j);
 
     }
     return ret;
