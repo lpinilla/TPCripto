@@ -7,7 +7,7 @@ hfs process_hf(char *file_name)
 
   //size NO CUENTA  EOF cuando termina el archivo
   hf->size = file_size(file_name); //no tiene en cuenta el EOF
-  hf->file = malloc(hf->size+1);//para agregar \0
+  hf->file = malloc(hf->size + 1); //para agregar \0
   hf->ext = analice_name(file_name, hf);
   hf->file_name = malloc(strlen(file_name) + 1); //+1 para el /0
   memcpy(hf->file_name, file_name, strlen(file_name) + 1);
@@ -38,7 +38,7 @@ void store_file(char file_name[], hfs hfs)
     return;
   }
 
-  uint32_t count = fread(hfs->file, sizeof(uint8_t), hfs->size+1 , fp);
+  uint32_t count = fread(hfs->file, sizeof(uint8_t), hfs->size + 1, fp);
 
   fclose(fp);
 
@@ -77,7 +77,7 @@ uint8_t *analice_name(char *file_name, hfs hfs)
   return extencion;
 }
 
-//no tiene en cuenta el EOF. 
+//no tiene en cuenta el EOF.
 uint32_t file_size(char file_name[])
 {
   // opening the file in read mode
@@ -95,7 +95,7 @@ uint32_t file_size(char file_name[])
   // calculating the size of the file
   uint32_t res = ftell(fp);
 
-//printf("Size en file size %d\n",res);
+  //printf("Size en file size %d\n",res);
   // closing the file
   fclose(fp);
 
@@ -106,17 +106,34 @@ uint8_t *concat_hf(hfs hf_info)
 {
   uint8_t *rta = malloc(sizeof(uint32_t) + hf_info->size + hf_info->ext_size);
   rta[0] = hf_info->size >> 24;
-  rta[1] = hf_info->size  >> 16;
-  rta[2] = hf_info->size  >> 8;
-  rta[3] = hf_info->size ;
-//   printf("size: %c\n",hf_info->size >> 24);
-//   printf("size: %d\n",hf_info->size >> 16);
-//   printf("size: %d\n",hf_info->size >> 8);
-//   printf("size: %d\n",hf_info->size);
-// printf("rta %d\n",rta[0]);
+  rta[1] = hf_info->size >> 16;
+  rta[2] = hf_info->size >> 8;
+  rta[3] = hf_info->size;
+  //   printf("size: %c\n",hf_info->size >> 24);
+  //   printf("size: %d\n",hf_info->size >> 16);
+  //   printf("size: %d\n",hf_info->size >> 8);
+  //   printf("size: %d\n",hf_info->size);
+  // printf("rta %d\n",rta[0]);
   //memcpy(rta, hf_info->size, sizeof(uint32_t));
-  memcpy(rta + sizeof(uint32_t), hf_info->file, hf_info->size );
-  memcpy(rta + sizeof(uint32_t) + hf_info->size , hf_info->ext, hf_info->ext_size + 1);
+  memcpy(rta + sizeof(uint32_t), hf_info->file, hf_info->size);
+  memcpy(rta + sizeof(uint32_t) + hf_info->size, hf_info->ext, hf_info->ext_size + 1);
 
   return rta;
+}
+
+void payload_ext(payload p)
+{
+  char extension[]={0,0,0,0,0,0,0,0};
+  int i = 0;
+  char *puntero = (char*)p->content + p->size +5;
+  printf("puntero %d\n",*puntero);
+  while (*puntero != '.' && i<40)
+  {
+    extension[i] = *puntero;
+      //printf("puntero %p\n",puntero);
+
+      printf("puntero %c\n",extension[i++]);
+
+    puntero -= sizeof(uint8_t);
+  }
 }
