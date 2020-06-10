@@ -19,8 +19,6 @@ int KSA(uint8_t *key, uint8_t *S);
 int PRGA(uint8_t *S, uint8_t *plaintext, uint8_t *ciphertext,uint32_t size);
 int RC4(uint8_t *key, uint8_t *plaintext, uint8_t *ciphertext, uint32_t size);
 
-// void swap(unsigned char *s, unsigned int i, unsigned int j);
-// void rc4_init(unsigned char *key, unsigned int key_lenght);
-// unsigned char rc4_output();
+
 
 #endif

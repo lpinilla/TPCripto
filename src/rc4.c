@@ -65,11 +65,11 @@ int PRGA(uint8_t *S, uint8_t *plaintext, uint8_t *ciphertext, uint32_t size) {
 int RC4(uint8_t* key, uint8_t *plaintext,uint8_t *ciphertext, uint32_t size) {
 
     uint8_t S[M];
-    printf("key: ");
-    for(int i=0;i<6;i++){
-        printf("%02x ",key[i]);
-    }
-    printf("\n");
+    // printf("key: ");
+    // for(int i=0;i<6;i++){
+    //     printf("%02x ",key[i]);
+    // }
+    // printf("\n");
 
     KSA(key, S);
     PRGA(S, plaintext, ciphertext,size);
