@@ -164,17 +164,54 @@ payload extract_payload_lsbi(carrier c, uint8_t * rc4_key){
     lsb l = create_lsb(1);
     memcpy(rc4_key,c->content,KEY_SIZE / BYTE_SIZE);
     //*rc4_key = c->content[0]<<40 ^ c->content[1]<<32 ^ c->content[2]<<24 ^ c->content[3]<<16 ^ c->content[4]<<8 ^ c->content[5];
-    uint8_t hop= get_lsbi_hop(c);
-    c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
+    //int hop=1;
+     uint8_t hop= get_lsbi_hop(c);
+     c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
 
     printf("hop: %d \n", hop);
     payload p = (payload) malloc(sizeof(t_payload));
     uint32_t payload_size = extract_payload_size(l, c, hop);
+    printf("size %d\n",payload_size);
     //lsb1 size 44886
-    printf("size: %d \n", payload_size);
-    p->size = payload_size;
+
+    uint8_t array[4];
+    array[0] = (int)((payload_size >> 24) & 0xFF);
+    array[1] = (int)((payload_size >> 16) & 0xFF);
+    array[2] = (int)((payload_size >> 8) & 0XFF);
+    array[3] = (int)((payload_size & 0XFF));
+
+    //desencripto el size
+    uint8_t* payload_size_decript=malloc(6);
+    RC4(rc4_key,array,payload_size_decript,4);
+   
+    // printf("array : ");
+    // for (int i = 0; i < 4; i++)
+    // {
+    //     printf("%x ", array[i]);
+    // }
+    // printf("\n");
+    // printf("size dec: ");
+    // for (int i = 0; i < 4; i++)
+    // {
+    //     printf("%x ", payload_size_decript[i]);
+    // }
+    // printf("\n");
+
+    //convierto payload_size_decript de hexa a numero decimal
+    uint32_t res = 0;
+    char arr[128]={0};
+
+    for (int i = 0; i < 4; i++)
+        sprintf((arr + (i * 2)), "%02x", (payload_size_decript[i] & 0xff));
+
+    printf("arr is %s\n", arr);
+
+    res = strtoll(arr, NULL, 16);
+    printf("res is %u\n", res);
+
+    p->size = res;
     p->content = (uint8_t *) malloc(sizeof(uint8_t) * payload_size);
-    for(long i = 0; i < p->size; i++) p->content[i] = extract_byte_lsbi(l,c,hop, i + 7);
+    for(long i = 0; i < p->size+5; i++) p->content[i] = extract_byte_lsbi(l,c,hop, i+4 );
     destroy_lsb(l);
     return p;
 }

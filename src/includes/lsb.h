@@ -5,6 +5,7 @@
 #include <payload.h>
 #include <carrier.h>
 #include <lsb.h>
+#include <rc4.h>
 
 #define BYTE_SIZE 8
 #define MAX_THREADS 64
