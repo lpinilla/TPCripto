@@ -136,8 +136,9 @@ void lsb_steg(lsb l, carrier c, payload p){
 
 uint8_t get_lsbi_hop(carrier c){
     uint8_t hop_byte = *c->content, ret = 0;
-    for(int i=(BYTE_SIZE - 1); !ret && i >= 0; i++) ret = hop_byte & (1 << i);
-    return (!ret)? 256: ret;
+    for (int i = (BYTE_SIZE - 1); !ret && i >= 0; i--)
+        ret = hop_byte & (1 << i);
+    return (!ret) ? 256 : ret;
 }
 
 void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop){
