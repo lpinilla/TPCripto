@@ -35,7 +35,9 @@ void lsb_i()
 
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
 
-    uint8_t *key = malloc(64); //48bits necesarios, lo demas se rellena con 0
+    //48bits necesarios, lo demas se rellena con 0
+    uint8_t *key = malloc(sizeof(uint64_t));
+    memset(key, 0, sizeof(uint64_t));
 
     payload p = extract_payload_lsbi(c, key);
     printf("hasta aca\n");

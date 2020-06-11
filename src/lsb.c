@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <rc4.h>
 
 lsb create_lsb(int n){
   lsb l = (lsb)malloc(sizeof(t_lsb));
@@ -95,7 +96,7 @@ uint32_t extract_payload_size(lsb l, carrier c, int hop){
     uint8_t bytes[BYTE_SIZE / 2] = {0, 0, 0, 0};
     for(int i = 0; i < (BYTE_SIZE/2); i++){
         if(hop){
-            bytes[i] = extract_byte_lsbi(l,c, hop, i);
+            bytes[i] = extract_byte_lsbi(l, c, hop, i);
         }else{
             bytes[i] = extract_byte(l,c);
         }
@@ -162,19 +163,40 @@ void lsb_i_steg(carrier c, payload p){
 payload extract_payload_lsbi(carrier c, uint8_t * rc4_key){
     if(c == NULL) return NULL;
     lsb l = create_lsb(1);
-    memcpy(rc4_key,c->content,KEY_SIZE / BYTE_SIZE);
     //*rc4_key = c->content[0]<<40 ^ c->content[1]<<32 ^ c->content[2]<<24 ^ c->content[3]<<16 ^ c->content[4]<<8 ^ c->content[5];
     uint8_t hop= get_lsbi_hop(c);
-    c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
 
-    printf("hop: %d \n", hop);
+
+    memcpy(rc4_key,c->content,KEY_SIZE / BYTE_SIZE);
+    for(int i = 0; i < KEY_SIZE / BYTE_SIZE; i++){
+        printf("%x \n", c->content[i]);
+    }
+    c->content += sizeof(uint8_t) * 6; //ignorando los bytes de la key
+    printf("hop: %d \n", (uint32_t) hop);
+
     payload p = (payload) malloc(sizeof(t_payload));
     uint32_t payload_size = extract_payload_size(l, c, hop);
     //lsb1 size 44886
+    //p->size = 44886 + 9; // (5 de ext + 4 de tamaño)
     printf("size: %d \n", payload_size);
-    p->size = payload_size;
+    uint8_t * p_1 = malloc(sizeof(uint32_t));
+    uint8_t * p_2 = malloc(sizeof(uint32_t));
+    memset(p_1, 0, sizeof(uint32_t));
+    memset(p_2, 0, sizeof(uint32_t));
+
+
+    uint32_t cipher_size = 0;
+    memcpy(p_1, &payload_size, sizeof(uint32_t));
+    RC4(rc4_key, p_1, p_2, sizeof(uint32_t));
+    memcpy(&cipher_size, p_2, sizeof(uint32_t));
+    printf("\t\t \033[0;33m UNENCRYPTED SIZE: %d \033[0m\n", cipher_size);
+
+    return p;
+
+
+    p->size = cipher_size;
     p->content = (uint8_t *) malloc(sizeof(uint8_t) * payload_size);
-    for(long i = 0; i < p->size; i++) p->content[i] = extract_byte_lsbi(l,c,hop, i + 7);
+    for(long i = 0; i < p->size; i++) p->content[i] = extract_byte_lsbi(l,c,hop, i);
     destroy_lsb(l);
     return p;
 }
