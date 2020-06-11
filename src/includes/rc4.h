@@ -12,12 +12,13 @@
 #include <inttypes.h>
 
 //para nuestra implementacion vamos a usar claves de 48bits
-#define N 48   // 2^8
+#define N 6
 
 void swap(uint8_t *a, uint8_t *b);
 int KSA(uint8_t *key, uint8_t *S);
 int PRGA(uint8_t *S, uint8_t *plaintext, uint8_t *ciphertext,uint32_t size);
 int RC4(uint8_t *key, uint8_t *plaintext, uint8_t *ciphertext, uint32_t size);
+
 
 
 #endif
