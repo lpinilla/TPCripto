@@ -8,8 +8,7 @@ FW = tasteful
 TEST_SRC = $(wildcard *.c)
 OBJ= $(TEST_SRC:.c=.o)
 
-#all: $(TEST_SRC:.c=.tasty) $(FW)
-all: read_ejemplos_de_prueba_test.tasty $(FW)
+all: $(TEST_SRC:.c=.tasty) $(FW)
 	@echo "\e[36m[Tests ready]\e[0m"
 
 ../src/.objs/%.o: ../src/%.c

@@ -25,8 +25,7 @@ cipherFunction getDesEncriptionFunctionPtr (enum modes mode) {
         case ecb:
             return &EVP_des_ecb;
         case cfb:
-            // Todo. existe EVP_des_cfb64 EVP_des_cfb8 y EVP_des_cfb1. Preguntar cual va
-            return &EVP_des_cfb64;
+            return &EVP_des_cfb8;
         case ofb:
             return &EVP_des_ofb;
         case cbc:

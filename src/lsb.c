@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
-#include <rc4.h>
 
 lsb create_lsb(int n){
   lsb l = (lsb)malloc(sizeof(t_lsb));
@@ -96,7 +95,7 @@ uint32_t extract_payload_size(lsb l, carrier c, int hop){
     uint8_t bytes[BYTE_SIZE / 2] = {0, 0, 0, 0};
     for(int i = 0; i < (BYTE_SIZE/2); i++){
         if(hop){
-            bytes[i] = extract_byte_lsbi(l, c, hop, i);
+            bytes[i] = extract_byte_lsbi(l,c, hop, i);
         }else{
             bytes[i] = extract_byte(l,c);
         }
@@ -108,13 +107,13 @@ payload extract_payload(lsb l, carrier c){
     if(l == NULL || c == NULL) return NULL;
     payload p = (payload) malloc(sizeof(t_payload));
     p->size = extract_payload_size(l, c, 0);
+    printf("size %ld \n", p->size);
+    if(p->size >= 100000000) return NULL;
     p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size +5);
     for(int i = 0; i < p->size+5; i++) p->content[i] = extract_byte(l, c);
-
     // for(int j=0;j<5;j++){
     //     printf("extract: %c\n",p->content[p->size+j]);
     // }
-
     return p;
 }
 
@@ -137,7 +136,7 @@ void lsb_steg(lsb l, carrier c, payload p){
 
 uint8_t get_lsbi_hop(carrier c){
     uint8_t hop_byte = *c->content, ret = 0;
-    for(int i=(BYTE_SIZE - 1); !ret && i >= 0; i++) ret = hop_byte & (1 << i);
+    for(int i=(BYTE_SIZE - 1); !ret && i >= 0; i--) ret = hop_byte & (1 << i);
     return (!ret)? 256: ret;
 }
 
@@ -163,23 +162,15 @@ void lsb_i_steg(carrier c, payload p){
 payload extract_payload_lsbi(carrier c, uint8_t * rc4_key){
     if(c == NULL) return NULL;
     lsb l = create_lsb(1);
-    //*rc4_key = c->content[0]<<40 ^ c->content[1]<<32 ^ c->content[2]<<24 ^ c->content[3]<<16 ^ c->content[4]<<8 ^ c->content[5];
-    //int hop=1;
-     uint8_t hop= get_lsbi_hop(c);
-     c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
-
-
     memcpy(rc4_key,c->content,KEY_SIZE / BYTE_SIZE);
-    for(int i = 0; i < KEY_SIZE / BYTE_SIZE; i++){
-        printf("%x \n", c->content[i]);
-    }
-    c->content += sizeof(uint8_t) * 6; //ignorando los bytes de la key
-    printf("hop: %d \n", (uint32_t) hop);
+    uint8_t hop= get_lsbi_hop(c);
+    printf("FIRST VAL: 0x%02x \n", *c->content);
+    printf("HOP VAL: %d \n", hop);
+    c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
 
     payload p = (payload) malloc(sizeof(t_payload));
     uint32_t payload_size = extract_payload_size(l, c, hop);
-    printf("size %d\n",payload_size);
-    //lsb1 size 44886
+    printf("size dec: %d hexa: %02x \n",payload_size, payload_size);
 
     uint8_t array[4];
     array[0] = (int)((payload_size >> 24) & 0xFF);
@@ -190,7 +181,7 @@ payload extract_payload_lsbi(carrier c, uint8_t * rc4_key){
     //desencripto el size
     uint8_t* payload_size_decript=malloc(6);
     RC4(rc4_key,array,payload_size_decript,4);
-   
+
     // printf("array : ");
     // for (int i = 0; i < 4; i++)
     // {
@@ -206,19 +197,19 @@ payload extract_payload_lsbi(carrier c, uint8_t * rc4_key){
 
     //convierto payload_size_decript de hexa a numero decimal
     uint32_t res = 0;
-    char arr[128]={0};
-
+    char arr[128]= {0};
     for (int i = 0; i < 4; i++)
         sprintf((arr + (i * 2)), "%02x", (payload_size_decript[i] & 0xff));
-
     printf("arr is %s\n", arr);
-
     res = strtoll(arr, NULL, 16);
     printf("res is %u\n", res);
 
+
     p->size = res;
+    if(p->size >= 100000000) return NULL;
     p->content = (uint8_t *) malloc(sizeof(uint8_t) * payload_size);
-    for(long i = 0; i < p->size+5; i++) p->content[i] = extract_byte_lsbi(l,c,hop, i+4 );
+    //printf("RESULTADO %ld \n", p->size);
+    for(long i = 0; i < p->size+5; i++) p->content[i] = extract_byte_lsbi(l,c,hop, i+4);
     destroy_lsb(l);
     return p;
 }

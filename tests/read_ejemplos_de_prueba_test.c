@@ -22,10 +22,11 @@ void lsb_i(); //extraer con lsbi
 
 int main()
 {
+
     create_suite("Extract ejemplos prueba test");
-    add_test(lsb_1);
-    add_test(lsb_4);
-    add_test(ladoLSB4aes256ofb);
+    //add_test(lsb_1);
+    //add_test(lsb_4);
+    //add_test(ladoLSB4aes256ofb);
     add_test(lsb_i);
     run_suite();
     clear_suite();
