@@ -44,33 +44,18 @@ void lsb_i()
 
     payload p = extract_payload_lsbi(c, key);
     
-    memcpy(key, bmp_f->data, N);
-
-    //en plaintext vamos a guardar el payload desencriptado mas el tamanio al principio
-    //el tamanio es 4(bytes para el tamanio)+tamanio del archivo(p->size)+5(extencion)
-    uint8_t *plaintext = malloc(sizeof(uint8_t) * (p->size+T+E));
-
-    //en final guardamos tamanio encriptado + payload encriptado
-    uint8_t *final = malloc(p->size +T+E );
+    //memcpy(key, bmp_f->data, N);
 
     //encriptamos el size devuelta, ya que para desencriptar el size tiene que estar encriptado al principio
-    uint8_t* sizeencript=malloc(T);
-    uint8_t array[T];
-    array[0] = (int)((p->size >> 24) & 0xFF);
-    array[1] = (int)((p->size >> 16) & 0xFF);
-    array[2] = (int)((p->size >> 8) & 0XFF);
-    array[3] = (int)((p->size & 0XFF));
+    // uint8_t* sizeencript=malloc(T);
+    // uint8_t array[T];
+    // array[0] = (int)((p->size >> 24) & 0xFF);
+    // array[1] = (int)((p->size >> 16) & 0xFF);
+    // array[2] = (int)((p->size >> 8) & 0XFF);
+    // array[3] = (int)((p->size & 0XFF));
 
-    RC4(key,array,sizeencript,T);
+    // RC4(key,array,sizeencript,T);
 
-    //copio al princio de final el size encriptado
-    memcpy(final, sizeencript, T);
-
-    //copio despues del size el contenido 
-    memcpy(final + T, p->content, p->size+E);
-
-    //desencripto final y lo guardo en plaintext
-    RC4(key, final, plaintext, p->size+T+E);
 
     FILE *f = fopen("test_create_files/lsbi_extract_test.png", "w");
     if (f == NULL)
@@ -79,7 +64,7 @@ void lsb_i()
         return;
     }
     //escribo el plaintext en el file, sin el tamanio inicial ni la extension al final
-    fwrite(plaintext+4, sizeof(uint8_t), p->size, f);
+    fwrite(p->content, sizeof(uint8_t), p->size, f);
     fclose(f);
 
     destroy_carrier(c);

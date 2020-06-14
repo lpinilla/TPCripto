@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=c18 -I ../src/includes/ -I ../Tasteful -pthread -Wno-nonnull-compare -g
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11 -I ../src/includes/ -I ../Tasteful -pthread -Wno-nonnull-compare -g
 CLIBRARIES = -lssl -lcrypto
 LIB = testing_suite.c
 SOURCES = $(filter-out ../src/main.c, $(wildcard ../src/*.c))
@@ -9,6 +9,7 @@ TEST_SRC = $(wildcard *.c)
 OBJ= $(TEST_SRC:.c=.o)
 
 all: $(TEST_SRC:.c=.tasty) $(FW)
+#all: read_ejemplos_de_prueba_test.tasty $(FW)
 	@echo "\e[36m[Tests ready]\e[0m"
 
 ../src/.objs/%.o: ../src/%.c
