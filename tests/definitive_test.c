@@ -177,7 +177,7 @@ void lsb_enchanced_check(){
     assert_true(1 == 1);
 }
 
-void lsbi_test(){
+void lsbi_test2(){
 
     bmp_file bmp_f = read_bmp("budapest.bmp");
 

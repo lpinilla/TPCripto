@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS = -g -pthread -std=c18 --pedantic -Werror -Wno-implicit-fallthrough -Wall -I includes/ -O2 -pipe -D_FORTIFY_SOURCE=2 -Wno-nonnull-compare -Wextra -D_POSIX_C_SOURCE=200112L
+CFLAGS = -g -pthread -std=c11 --pedantic -Werror -Wno-implicit-fallthrough -Wall -I includes/ -O2 -pipe -D_FORTIFY_SOURCE=2 -Wno-nonnull-compare -Wextra -D_POSIX_C_SOURCE=200112L
 CLIBRARIES = -lssl -lcrypto
 DEPS= $(wildcard includes/*.h)
 SRC= $(wildcard *.c)
