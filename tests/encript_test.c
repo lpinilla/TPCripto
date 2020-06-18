@@ -60,7 +60,7 @@ void encrypt_decrypt_test(enum algorithms algorithm, enum modes mode) {
     char * cipher = malloc(2048);
     /// Aca se va a poner el texto descifrado
     char * unsciphered = malloc(2048);
-    int cipher_len = encrypt((unsigned char *)plain, password, (unsigned char *) cipher, mode, algorithm);
+    int cipher_len = encrypt((unsigned char *)plain, strlen(plain), password, (unsigned char *) cipher, mode, algorithm);
     int decrypt_len = decrypt((unsigned char *)unsciphered, password, (unsigned char *)cipher, cipher_len, mode, algorithm);
     assert_false(memcmp(plain, unsciphered, decrypt_len));
     free(cipher);

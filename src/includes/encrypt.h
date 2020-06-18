@@ -36,7 +36,7 @@ enum modes {
 typedef const EVP_CIPHER *(*cipherFunction)(void);
 
 // Return value is size of ciphertext
-int encrypt(unsigned char *plaintext, char* password, unsigned char* ciphertext, enum modes mode, enum algorithms algorithm);
+int encrypt(unsigned char *plaintext, long plaintext_size, char* password, unsigned char* ciphertext, enum modes mode, enum algorithms algorithm);
 
 // Return value is size of plaintext
 int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertext, int ciphertext_len, enum modes mode, enum algorithms algorithm);

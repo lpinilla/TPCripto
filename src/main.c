@@ -23,6 +23,14 @@ void save_file(uint8_t *content, long size, char *path) {
     return;
 }
 
+long get_file_size(FILE *f) {
+    // Es necesario que el file este apuntando al principio
+    fseek(f, 0L, SEEK_END);
+    long size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    return size;
+}
+
 payload get_payload(struct options *options) {
     bmp_file bmp_f = read_bmp(options->p);
     bmp_header bmp_h = bmp_f->header;
@@ -52,7 +60,7 @@ payload get_payload(struct options *options) {
 }
 
 void _embed(struct options *options) {
-    
+    uint8_t *ciphertext;    
     // Paso 1: Abrir los archivos de In y Portador
     FILE *in_f = fopen(options->in, "r");
     if (in_f == NULL) {
@@ -65,13 +73,31 @@ void _embed(struct options *options) {
         return;
     }
 
+    long in_size = get_file_size(in_f);
+    uint8_t in_content[in_size];
+    in_size = fread(in_content, sizeof(uint8_t), in_size, in_f);
+    fclose(in_f);
     // Paso 2: Encriptar en caso de ser necesario
+    uint8_t *in = in_content;
+
     if (options->encrypted) {
-        // TODO: Seguir....
+        ciphertext = malloc(in_size * 2); // Reserve twice the space just in case
+        int cipher_size = encrypt(in_content, in_size,options->encription_password, ciphertext, options->encription_mode, options->encription_algorithm);        
+        in = ciphertext;
+        in_size = (long) cipher_size;
     }
-    printf("CODE IS INCOMPLETE\n");
-    return;
+
+
+    UNUSED(in);
     // TODO: Seguir....
+    // La parte de encripcion ya esta. Falta meter el IN en el P y grabarlo al OUT
+    printf("CODE IS INCOMPLETE\n");
+
+    // Cleanup
+    free(ciphertext);
+    fclose(p_f);
+    return;
+
 }
 
 void _extract(struct options * options) {

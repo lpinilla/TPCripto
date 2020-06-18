@@ -234,7 +234,7 @@ int decrypt(unsigned char *plaintext, char * password, unsigned char * ciphertex
 }
 
 // Return value is size of ciphertext
-int encrypt(unsigned char *plaintext, char* password, unsigned char* ciphertext, enum modes mode, enum algorithms algorithm) {
+int encrypt(unsigned char *plaintext, long plaintext_size, char* password, unsigned char* ciphertext, enum modes mode, enum algorithms algorithm) {
     // Sacado del Anexo
     const EVP_CIPHER *cipher;
     const EVP_MD *dgst = NULL; 
@@ -246,12 +246,10 @@ int encrypt(unsigned char *plaintext, char* password, unsigned char* ciphertext,
     cipherFunction cipherFunctionPtr = getEncriptionFunctionPtr(algorithm, mode);
     cipher = (*cipherFunctionPtr)();
     dgst = EVP_sha256();
-
-    int inl = strlen((char *)plaintext);
     EVP_BytesToKey(cipher, dgst, salt, (unsigned char *)password, strlen(password),1, key, iv);
     keylen = EVP_CIPHER_key_length(cipher);
     ivlen = EVP_CIPHER_iv_length(cipher);
-    int cipher_len = _encrypt(plaintext, inl, key, iv, ciphertext, cipherFunctionPtr);
+    int cipher_len = _encrypt(plaintext, plaintext_size, key, iv, ciphertext, cipherFunctionPtr);
 
 
     UNUSED(keylen);
