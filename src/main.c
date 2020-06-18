@@ -91,6 +91,12 @@ void _embed(struct options *options) {
     UNUSED(in);
     // TODO: Seguir....
     // La parte de encripcion ya esta. Falta meter el IN en el P y grabarlo al OUT
+
+    // Variables Disponibles para lo que falta:
+    // uint8_t * in  ---> archivo a ocultar. ya incluye encripcion en caso de necesitarla
+    // long in_size  ---> longitud del archivo a ocultar
+    // FILE * p_f    ---> file del archivo portador ( donde se va a meter )
+
     printf("CODE IS INCOMPLETE\n");
 
     // Cleanup
