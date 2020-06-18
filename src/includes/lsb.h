@@ -1,6 +1,7 @@
 #ifndef _LSB_H_
 #define _LSB_H_
 
+#include <options.h>
 #include <stdint.h>
 #include <payload.h>
 #include <carrier.h>
@@ -31,7 +32,6 @@ typedef struct{
 }t_routine_args;
 
 typedef t_routine_args * routine_args;
-
 
 lsb create_lsb(int n);
 

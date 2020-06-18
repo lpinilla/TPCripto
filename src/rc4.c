@@ -21,7 +21,7 @@ int KSA(uint8_t* key, uint8_t *S) {
     // printf("\n");
 
     //int len = strlen(key);
-    int len=N;
+    int len=RC4_N;
     int j = 0;
 
     for(int i = 0; i < M; i++)

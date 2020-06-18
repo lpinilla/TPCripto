@@ -94,9 +94,9 @@ void lsbi_test(void){
     bmp_file bmp_f = read_bmp("back.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-    uint8_t *key = malloc(N); //48bits necesarios para la key
+    uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
     payload p = extract_payload_lsbi(c, key);
-    memcpy(key, bmp_f->data, N);
+    memcpy(key, bmp_f->data, RC4_N);
     //en plaintext vamos a guardar el payload desencriptado mas el tamanio al principio
     //el tamanio es 4(bytes para el tamanio)+tamanio del archivo(p->size)+5(extencion)
     uint8_t *plaintext = malloc(sizeof(uint8_t) * (p->size+T+E));
@@ -137,9 +137,9 @@ void back_test(){
     //lsb l = create_lsb(4);
     //payload p = extract_payload(l, c);
 
-    uint8_t *key = malloc(N); //48bits necesarios para la key
+    uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
     payload p = extract_payload_lsbi(c, key);
-    memcpy(key, bmp_f->data, N);
+    memcpy(key, bmp_f->data, RC4_N);
 
     FILE *f = fopen("back_inside/extraction", "w");
     if (f == NULL)
@@ -186,11 +186,11 @@ void lsbi_test2(){
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     printf("lsbi %d %d %d %d\n",bmp_h->size,bmp_h->bits_per_pixel,bmp_h->width_px, bmp_h->height_px);
 
-    uint8_t *key = malloc(N); //48bits necesarios para la key
+    uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
 
     payload p = extract_payload_lsbi(c, key);
     
-    memcpy(key, bmp_f->data, N);
+    memcpy(key, bmp_f->data, RC4_N);
 
     //en plaintext vamos a guardar el payload desencriptado mas el tamanio al principio
     //el tamanio es 4(bytes para el tamanio)+tamanio del archivo(p->size)+5(extencion)

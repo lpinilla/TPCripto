@@ -1,5 +1,9 @@
+#include <bmp_header.h>
+#include <carrier.h>
+#include <lsb.h>
 #include <memory.h>
 #include <options.h>
+#include <payload.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,15 +12,91 @@
 
 #define UNUSED(x) (void)(x)
 
+void save_file(uint8_t *content, long size, char *path) {
+    FILE *f = fopen(path, "w");
+    if (f == NULL) {
+        printf("[ERROR] Could not create file to save!\n");
+        return;
+    }
+    fwrite(content, sizeof(uint8_t), size, f);
+    fclose(f);
+    return;
+}
 
+payload get_payload(struct options *options) {
+    bmp_file bmp_f = read_bmp(options->p);
+    bmp_header bmp_h = bmp_f->header;
+    carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
+    payload p;
+    enum stego_types lsb_type = options->stego_type;
+    if (lsb_type == lsbi) {
+        uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
+        p = extract_payload_lsbi(c, key);
+        // No estoy seguro para que sirve la key
+        free(key);
+    } else {   
+        lsb l;
+        if (lsb_type == lsb1) {
+            l = create_lsb(1);
+        } else if (lsb_type == lsb4) {
+            l = create_lsb(4);
+        } else {
+            printf("Unknown lsb type\n");
+            exit(0);
+        }
+        p = extract_payload(l, c);
+        destroy_lsb(l);
+    }
+    destroy_carrier(c);
+    return p;
+}
 
 void _embed(struct options *options) {
-    UNUSED(options);
+    
+    // Paso 1: Abrir los archivos de In y Portador
+    FILE *in_f = fopen(options->in, "r");
+    if (in_f == NULL) {
+        printf("[ERROR] Could not open file to hide!\n");
+        return;
+    }
+    FILE *p_f = fopen(options->p, "r");
+    if (p_f == NULL) {
+        printf("[ERROR] Could not open carrier file!\n");
+        return;
+    }
+
+    // Paso 2: Encriptar en caso de ser necesario
+    if (options->encrypted) {
+        // TODO: Seguir....
+    }
+    printf("CODE IS INCOMPLETE\n");
+    return;
+    // TODO: Seguir....
 }
 
 void _extract(struct options * options) {
-    UNUSED(options);
+    // A tener en cuenta: el tipo payload es un puntero
+    payload pl = get_payload(options);
+
+
+    uint8_t *output = pl->content;
+    long size = pl->size;
+
+    if (options->encrypted) {
+        uint8_t *plaintext = malloc(pl->size);
+        int d = decrypt(plaintext, options->encription_password, pl->content, pl->size, 
+            options->encription_mode, options->encription_algorithm);
+    
+        size = d - RC4_T- RC4_E;
+        output = plaintext;
+        //muy importante el +4 para saltear el tamanio de lo encriptado, el -4 para descontar el tamanio y -5 para extension
+        output += 4;
+    }
+    save_file(output, size, options->out);
+    // Cleanup
+    destroy_payload(pl);
 }
+
 
 void print_options(struct options *options) {
     printf("-- Options --\n");

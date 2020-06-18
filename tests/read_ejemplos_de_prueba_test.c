@@ -40,7 +40,7 @@ void lsb_i()
 
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
 
-    uint8_t *key = malloc(N); //48bits necesarios para la key
+    uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
 
     payload p = extract_payload_lsbi(c, key);
     
