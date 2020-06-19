@@ -4,10 +4,13 @@
 #include <hidden_file.h>
 #include <jobs.h>
 #include <lsb.h>
+#include <operations.h>
+#include <options.h>
 #include <payload.h>
 #include <stdio.h>
 #include <testing_suite.h>
 #include <string.h>
+#include <utils.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <rc4.h>
@@ -18,14 +21,41 @@
 void roma_test();
 void lsb4_test();
 void lsbi_test(); //con la imagen budapest
+void simple_inyect_extract_test();
 
 int main(){
     create_suite("Ejemplos Definitivos");
-    add_test(roma_test);
-    add_test(lsb4_test);
-    add_test(lsbi_test);
+    // add_test(roma_test);
+    // add_test(lsb4_test);
+    // add_test(lsbi_test);
+    add_test(simple_inyect_extract_test);
     run_suite();
     clear_suite();
+}
+
+void simple_inyect_extract_test() {
+    struct options embed_options;
+    struct options extract_options;
+
+    embed_options.operation = embed;
+    strcpy(embed_options.in, "files_for_testing/lsb1_test.png");
+    strcpy(embed_options.p, "files_for_testing/ladoLSB4.bmp");
+    strcpy(embed_options.out, "tests_input/sample_inyectado.bmp");
+    embed_options.stego_type = lsb1;
+    embed_options.encrypted = false;
+
+    extract_options.operation = extract;
+    strcpy(extract_options.p, "tests_input/sample_inyectado.bmp");
+    strcpy(extract_options.out, "tests_input/sample_extraido.png");
+    extract_options.stego_type = lsb1;
+    extract_options.encrypted = false;
+
+    _embed(&embed_options);
+    _extract(&extract_options);
+    assert_true(filesEqual("tests_input/sample_extraido.png", "files_for_testing/lsb1_test.png"));
+    UNUSED(extract_options);
+    UNUSED(embed_options);
+
 }
 
 //analizando roma con lsb1 obtuvimos un buscaminas (extract_roma.png)
