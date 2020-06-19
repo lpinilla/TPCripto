@@ -63,7 +63,7 @@ void lsb4_test(){
     if(p != NULL){
         uint8_t *plaintext = malloc(p->size);
         int d = decrypt(plaintext, "camuflado", p->content, p->size, cfb, des);
-        FILE *f = fopen("tests_output/hugo4_extracted.pdf", "w+"); //TODO: no hardcodear la extensión
+        FILE *f = fopen("tests_output/hugo4_extracted.wmv", "w+"); //TODO: no hardcodear la extensión
         if (f == NULL){
             printf("Could not create file!\n");
             return;
@@ -81,10 +81,9 @@ void lsbi_test(void){
     bmp_file bmp_f = read_bmp("archivos_finales/budapest.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-    uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
-    payload p = extract_payload_lsbi(c, key);
+    payload p = extract_payload_lsbi(c);
     if(p != NULL){
-        FILE *f = fopen("tests_output/budapest_extracted.png", "w+");
+        FILE *f = fopen("tests_output/budapest_extracted.pdf", "w+");
         if (f == NULL){
             printf("Could not create file!\n");
             return;

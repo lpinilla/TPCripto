@@ -157,10 +157,10 @@ int lsb_i_steg(carrier c, payload p){
     return 0;
 }
 
-payload extract_payload_lsbi(carrier c, uint8_t *rc4_key)
-{
+payload extract_payload_lsbi(carrier c){
     if (c == NULL) return NULL;
     lsb l = create_lsb(1);
+    uint8_t * rc4_key = malloc(RC4_N); //claves de 48 bits
     memcpy(rc4_key, c->content, KEY_SIZE / BYTE_SIZE);
     uint8_t hop = get_lsbi_hop(c);
     c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave

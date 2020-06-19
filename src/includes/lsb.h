@@ -47,7 +47,7 @@ payload extract_payload(lsb l, carrier c);
 int lsb_i_steg(carrier c, payload p);
 
 //función para recuperar un objeto payload del carrier con lsb-i
-payload extract_payload_lsbi(carrier c, uint8_t * rc4_key);
+payload extract_payload_lsbi(carrier c);
 
 //función para inyectar el bit según la máscara en la imágen portadora.
 void inject_bit(lsb l, carrier c, uint8_t i_byte, int bits_used);

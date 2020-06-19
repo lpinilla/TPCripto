@@ -15,8 +15,8 @@
 #define T 4 //tamanio del archivo
 #define E 5 //tamanio de la exxtension (.png\0)
 
-void lsb_4(); //extraer con lsb4
 void lsb_1(); //extraer con lsb1
+void lsb_4(); //extraer con lsb4
 void ladoLSB4aes256ofb(); //estraer con aes256 ofb
 void lsb_i(); //extraer con lsbi
 
@@ -37,18 +37,7 @@ void lsb_i()
     bmp_file bmp_f = read_bmp("files_for_testing/ladoLSBI_corregido.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-    uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
-    payload p = extract_payload_lsbi(c, key);
-    memcpy(key, bmp_f->data, RC4_N);
-    //encriptamos el size devuelta, ya que para desencriptar el size tiene que estar encriptado al principio
-    // uint8_t* sizeencript=malloc(T);
-    // uint8_t array[T];
-    // array[0] = (int)((p->size >> 24) & 0xFF);
-    // array[1] = (int)((p->size >> 16) & 0xFF);
-    // array[2] = (int)((p->size >> 8) & 0XFF);
-    // array[3] = (int)((p->size & 0XFF));
-
-    // RC4(key,array,sizeencript,T);
+    payload p = extract_payload_lsbi(c);
     FILE *f = fopen("tests_output/lsbi_extract_test.png", "w+");
     if (f == NULL){
         printf("Could not create file!\n");

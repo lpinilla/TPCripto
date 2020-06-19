@@ -38,11 +38,8 @@ payload get_payload(struct options *options) {
     payload p;
     enum stego_types lsb_type = options->stego_type;
     if (lsb_type == lsbi) {
-        uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
-        p = extract_payload_lsbi(c, key);
-        // No estoy seguro para que sirve la key
-        free(key);
-    } else {   
+        p = extract_payload_lsbi(c);
+    } else {
         lsb l;
         if (lsb_type == lsb1) {
             l = create_lsb(1);
