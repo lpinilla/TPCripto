@@ -35,17 +35,11 @@ int main()
 void lsb_i()
 {
     bmp_file bmp_f = read_bmp("files_for_testing/ladoLSBI_corregido.bmp");
-
     bmp_header bmp_h = bmp_f->header;
-
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-
     uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
-
     payload p = extract_payload_lsbi(c, key);
-    
-    //memcpy(key, bmp_f->data, N);
-
+    memcpy(key, bmp_f->data, RC4_N);
     //encriptamos el size devuelta, ya que para desencriptar el size tiene que estar encriptado al principio
     // uint8_t* sizeencript=malloc(T);
     // uint8_t array[T];
@@ -57,7 +51,7 @@ void lsb_i()
     // RC4(key,array,sizeencript,T);
 
 
-    FILE *f = fopen("test_create_files/lsbi_extract_test.png", "w");
+    FILE *f = fopen("files_for_testing/lsbi_extract_test.png", "w+");
     if (f == NULL)
     {
         printf("Could not create file!\n");

@@ -154,57 +154,47 @@ void lsb_i_steg(carrier c, payload p){
     destroy_lsb(l);
 }
 
-payload extract_payload_lsbi(carrier c, uint8_t * rc4_key){
-    if(c == NULL) return NULL;
+payload extract_payload_lsbi(carrier c, uint8_t *rc4_key)
+{
+    if (c == NULL) return NULL;
     lsb l = create_lsb(1);
-    memcpy(rc4_key,c->content,KEY_SIZE / BYTE_SIZE);
-    uint8_t hop= get_lsbi_hop(c);
-    printf("FIRST VAL: 0x%02x \n", *c->content);
-    printf("HOP VAL: %d \n", hop);
+    memcpy(rc4_key, c->content, KEY_SIZE / BYTE_SIZE);
+    uint8_t hop = get_lsbi_hop(c);
     c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
-
-    payload p = (payload) malloc(sizeof(t_payload));
-    uint32_t payload_size = extract_payload_size(l, c, hop);
-    printf("size dec: %d hexa: %02x \n",payload_size, payload_size);
-
-    uint8_t array[4];
-    array[0] = (int)((payload_size >> 24) & 0xFF);
-    array[1] = (int)((payload_size >> 16) & 0xFF);
-    array[2] = (int)((payload_size >> 8) & 0XFF);
-    array[3] = (int)((payload_size & 0XFF));
-
+    payload p = (payload)malloc(sizeof(t_payload));
+    uint32_t payload_size_enc = extract_payload_size(l, c, hop);
+    uint8_t* prep_size=malloc(RC4_T);
+    int size_rc4=prepare_size(payload_size_enc,prep_size);
     //desencripto el size
-    uint8_t* payload_size_decript=malloc(6);
-    RC4(rc4_key,array,payload_size_decript,4);
-
-    // printf("array : ");
-    // for (int i = 0; i < 4; i++)
-    // {
-    //     printf("%x ", array[i]);
-    // }
-    // printf("\n");
-    // printf("size dec: ");
-    // for (int i = 0; i < 4; i++)
-    // {
-    //     printf("%x ", payload_size_decript[i]);
-    // }
-    // printf("\n");
-
+    uint8_t *payload_size_decript = malloc(6);
+    RC4(rc4_key, prep_size, payload_size_decript, size_rc4);
     //convierto payload_size_decript de hexa a numero decimal
-    uint32_t res = 0;
-    char arr[128]= {0};
-    for (int i = 0; i < 4; i++)
-        sprintf((arr + (i * 2)), "%02x", (payload_size_decript[i] & 0xff));
-    printf("arr is %s\n", arr);
-    res = strtoll(arr, NULL, 16);
-    printf("res is %u\n", res);
+    p->size = hex_to_dec(payload_size_decript,size_rc4);
 
+    p->content = (uint8_t *)malloc(sizeof(uint8_t) * payload_size_enc);
+    for (long i = 0; i < p->size + 5; i++)
+        p->content[i] = extract_byte_lsbi(l, c, hop, i + 4);
+    
+    // ya tengo el contenido encriptado con RC4 en p->content, y el size desencriptado en p->size, y el size encriptado en 
+    // payload_size_enc y el size encriptado en 4 bytes en prep_size
+    
+    //en plaintext vamos a guardar el payload desencriptado mas el tamanio al principio
+    //el tamanio es 4(bytes para el tamanio)+tamanio del archivo(p->size)+5(extencion)
+    uint8_t *plaintext = malloc(sizeof(uint8_t) * (p->size+RC4_T+RC4_E));
+    
+    //en final guardamos tamanio encriptado + payload encriptado
+    uint8_t *final = malloc(p->size +RC4_T+RC4_E);
+    
+    //copio al princio de final el size encriptado
+    memcpy(final,prep_size,RC4_T);
 
-    p->size = res;
-    if(p->size >= 100000000) return NULL;
-    p->content = (uint8_t *) malloc(sizeof(uint8_t) * payload_size);
-    //printf("RESULTADO %ld \n", p->size);
-    for(long i = 0; i < p->size+5; i++) p->content[i] = extract_byte_lsbi(l,c,hop, i+4);
+    //copio despues del size el contenido
+    memcpy(final + RC4_T, p->content, p->size+RC4_E);
+
+    //desencripto final y lo guardo en plaintext
+    RC4(rc4_key, final, plaintext, p->size+RC4_T+RC4_E);
+    //guardo en p->content el contenido desencriptado
+    memcpy(p->content,plaintext+RC4_T,p->size);
     destroy_lsb(l);
     return p;
 }
