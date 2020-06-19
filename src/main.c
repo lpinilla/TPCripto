@@ -60,7 +60,7 @@ payload get_payload(struct options *options) {
 }
 
 void _embed(struct options *options) {
-    uint8_t *ciphertext;    
+    uint8_t *ciphertext = NULL;
     // Paso 1: Abrir los archivos de In y Portador
     FILE *in_f = fopen(options->in, "r");
     if (in_f == NULL) {
@@ -100,7 +100,7 @@ void _embed(struct options *options) {
     printf("CODE IS INCOMPLETE\n");
 
     // Cleanup
-    free(ciphertext);
+    if(ciphertext != NULL) free(ciphertext);
     fclose(p_f);
     return;
 

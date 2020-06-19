@@ -100,7 +100,7 @@ void rc4_text_test()
 {
     uint32_t size = 31;       //size del plaintext/cyphertext
     uint8_t *key = malloc(6); //48bits 6 bytes
-    memcpy(key, "secret", N);
+    memcpy(key, "secret", RC4_N);
     uint8_t *plaintext = malloc(size);
 
     memcpy(plaintext, "hola como estas todo bien y vos", size);

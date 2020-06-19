@@ -11,8 +11,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-//para nuestra implementacion vamos a usar claves de 48bits
-#define RC4_N 6
+#define RC4_N 6 //para nuestra implementacion vamos a usar claves de 48bits
 #define RC4_T 4 //tamanio del archivo
 #define RC4_E 5 //tamanio de la exxtension (.png\0)
 
