@@ -22,15 +22,31 @@ void roma_test();
 void lsb4_test();
 void lsbi_test(); //con la imagen budapest
 void simple_inyect_extract_test();
+void embed_modifies_file_test();
 
 int main(){
     create_suite("Ejemplos Definitivos");
     // add_test(roma_test);
     // add_test(lsb4_test);
     // add_test(lsbi_test);
+    add_test(embed_modifies_file_test);
     add_test(simple_inyect_extract_test);
     run_suite();
     clear_suite();
+}
+
+void embed_modifies_file_test() {
+    struct options embed_options;
+    
+    embed_options.operation = embed;
+    strcpy(embed_options.in, "files_for_testing/lsb1_test.png");
+    strcpy(embed_options.p, "files_for_testing/sample.bmp");
+    strcpy(embed_options.out, "tests_input/sample_inyectado.bmp");
+    embed_options.stego_type = lsb4;
+    embed_options.encrypted = false;
+
+    _embed(&embed_options);
+    assert_false(filesEqual("files_for_testing/sample.bmp", "tests_input/sample_inyectado.bmp"));
 }
 
 void simple_inyect_extract_test() {
@@ -39,15 +55,15 @@ void simple_inyect_extract_test() {
 
     embed_options.operation = embed;
     strcpy(embed_options.in, "files_for_testing/lsb1_test.png");
-    strcpy(embed_options.p, "files_for_testing/ladoLSB4.bmp");
+    strcpy(embed_options.p, "files_for_testing/sample.bmp");
     strcpy(embed_options.out, "tests_input/sample_inyectado.bmp");
-    embed_options.stego_type = lsb1;
+    embed_options.stego_type = lsb4;
     embed_options.encrypted = false;
 
     extract_options.operation = extract;
     strcpy(extract_options.p, "tests_input/sample_inyectado.bmp");
     strcpy(extract_options.out, "tests_input/sample_extraido.png");
-    extract_options.stego_type = lsb1;
+    extract_options.stego_type = lsb4;
     extract_options.encrypted = false;
 
     _embed(&embed_options);

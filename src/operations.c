@@ -65,9 +65,6 @@ void _embed(struct options *options) {
     in_size = (long)cipher_size;
   }
 
-  printf("options->out: %s\n", options->out);
-  printf("options->p: %s\n", options->p);
-
   if (!copy_file(options->out, options->p)) {
       goto cleanup;
   }
