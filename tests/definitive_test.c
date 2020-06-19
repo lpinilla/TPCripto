@@ -41,12 +41,12 @@ void embed_modifies_file_test() {
     embed_options.operation = embed;
     strcpy(embed_options.in, "files_for_testing/lsb1_test.png");
     strcpy(embed_options.p, "files_for_testing/sample.bmp");
-    strcpy(embed_options.out, "tests_input/sample_inyectado.bmp");
-    embed_options.stego_type = lsb4;
+    strcpy(embed_options.out, "tests_input/sample_inyectado2.bmp");
+    embed_options.stego_type = lsb1;
     embed_options.encrypted = false;
 
     _embed(&embed_options);
-    assert_false(filesEqual("files_for_testing/sample.bmp", "tests_input/sample_inyectado.bmp"));
+    assert_false(filesEqual("files_for_testing/sample.bmp", "tests_input/sample_inyectado2.bmp"));
 }
 
 void simple_inyect_extract_test() {
@@ -56,12 +56,12 @@ void simple_inyect_extract_test() {
     embed_options.operation = embed;
     strcpy(embed_options.in, "files_for_testing/lsb1_test.png");
     strcpy(embed_options.p, "files_for_testing/sample.bmp");
-    strcpy(embed_options.out, "tests_input/sample_inyectado.bmp");
+    strcpy(embed_options.out, "tests_input/sample_inyectado2.bmp");
     embed_options.stego_type = lsb4;
     embed_options.encrypted = false;
 
     extract_options.operation = extract;
-    strcpy(extract_options.p, "tests_input/sample_inyectado.bmp");
+    strcpy(extract_options.p, "tests_input/sample_inyectado2.bmp");
     strcpy(extract_options.out, "tests_input/sample_extraido.png");
     extract_options.stego_type = lsb4;
     extract_options.encrypted = false;

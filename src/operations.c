@@ -1,5 +1,6 @@
 #include <bmp_header.h>
 #include <carrier.h>
+#include <hidden_file.h>
 #include <lsb.h>
 #include <operations.h>
 #include <memory.h>
@@ -33,7 +34,6 @@ payload get_payload(struct options *options) {
       printf("Unknown lsb type\n");
       return 0;
     }
-    printf("Extracting payload\n");
     p = extract_payload(l, c);
     destroy_lsb(l);
   }
@@ -72,8 +72,19 @@ void _embed(struct options *options) {
   bmp_header bmp_h = bmp_f->header;
   carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes,
                              bmp_h->width_px, bmp_h->height_px);
+
+  size_t header_size = sizeof(t_bmp_header);                 
+  uint8_t *output = malloc(c->c_size + header_size);
+  memcpy(output, bmp_h, header_size);
+  memcpy(output + header_size, c->content, c->c_size);
+  save_file(output, c->c_size + header_size, options->out);
+  // hfs hf = process_hf(options->in);
+  // uint8_t *payload_insert = concat_hf(hf);
+  // payload p = create_payload(payload_insert, sizeof(uint32_t) + hf->size + hf->ext_size);
+  
   payload p = create_payload(in, in_size);
 
+  UNUSED(in);
   enum stego_types lsb_type = options->stego_type;
   int steg_return;
   if (lsb_type == lsbi) {
@@ -92,6 +103,7 @@ void _embed(struct options *options) {
     }
   }
 
+  
   printf("Steg returned: %d\n", steg_return);
 cleanup:
   // Cleanup
@@ -103,7 +115,7 @@ void _extract(struct options *options) {
   // A tener en cuenta: el tipo payload es un puntero
   payload pl = get_payload(options);
   if (pl == 0) {
-    printf("Error extracting payload\n");
+    printf("Error extracting payload (returned 0)\n");
     return;
   }
   uint8_t *output = pl->content;

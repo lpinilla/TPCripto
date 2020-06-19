@@ -1,4 +1,5 @@
 #include <utils.h>
+#include <carrier.h>
 #define UNUSED(x) (void)(x)
 
 int copy_file(char *target_path, char *source_path) {
@@ -23,8 +24,6 @@ int copy_file(char *target_path, char *source_path) {
             fwrite(c, 1, bytes, target);
         }
     }
-
-
     fclose(source);
     fclose(target);
     return 1;
@@ -52,7 +51,7 @@ long get_file_size(FILE *f) {
 
 
 bool filesEqual(char *fp1, char *fp2) {
-    char c1, c2;
+    int c1, c2;
     FILE *f1 = fopen(fp1, "r");
     FILE *f2 = fopen(fp2, "r");
     if (f1 == NULL) {
