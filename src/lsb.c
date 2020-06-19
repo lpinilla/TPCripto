@@ -111,9 +111,9 @@ payload extract_payload(lsb l, carrier c){
     return p;
 }
 
-void lsb_steg(lsb l, carrier c, payload p){
-    if(l == NULL || c == NULL || p == NULL) return;
-    if( (p->size * (BYTE_SIZE/ l->n)) >= c->c_size ) return; //TODO: mejorar
+int lsb_steg(lsb l, carrier c, payload p){
+    if(l == NULL || c == NULL || p == NULL) return 1;
+    if( (p->size * (BYTE_SIZE/ l->n)) >= c->c_size ) return -1;
     jobs total_jobs = divide_jobs(l, c, p, BYTE_INJECTIONS_PER_JOB);
     pthread_t threads[total_jobs->size];
     routine_args args = (routine_args) malloc(sizeof(t_routine_args) * total_jobs->size);
@@ -127,6 +127,7 @@ void lsb_steg(lsb l, carrier c, payload p){
     for(long i = 0; i < total_jobs->size;i++) pthread_join(threads[i],NULL);
     free(args);
     destroy_jobs(total_jobs);
+    return 0;
 }
 
 uint8_t get_lsbi_hop(carrier c){
@@ -142,16 +143,18 @@ void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop){
     }
 }
 
-void lsb_i_steg(carrier c, payload p){
+int lsb_i_steg(carrier c, payload p){
     lsb l = create_lsb(1);
     uint8_t hop_value = get_lsbi_hop(c);
     uint8_t byte_to_inject = 0;
     long bytes_needed = p->size * (BYTE_SIZE/ l->n);
+    if(bytes_needed >= c->c_size) return -1;
     for(long i = 0; i < bytes_needed; i++){
         byte_to_inject = get_next_byte(p);
         inject_lsbi_byte(l, c, byte_to_inject, hop_value);
     }
     destroy_lsb(l);
+    return 0;
 }
 
 payload extract_payload_lsbi(carrier c, uint8_t *rc4_key)

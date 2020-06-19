@@ -100,15 +100,17 @@ void lsb1_insert_0(){
     //poner total size en la estructura de hf
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(1);
-    lsb_steg(l, c, p);
-    payload p1 = extract_payload(l, c);
-    FILE *f = fopen("tests_output/lbs1_insert_text1.txt", "w+");
-    if (f == NULL) {
-        printf("File Not Found!\n");
-        return;
+    int status = lsb_steg(l, c, p);
+    if(status == 0){
+        payload p1 = extract_payload(l, c);
+        FILE *f = fopen("tests_output/lbs1_insert_text1.txt", "w+");
+        if (f == NULL) {
+            printf("File Not Found!\n");
+            return;
+        }
+        fwrite(p1->content, sizeof(uint8_t), p1->size, f);
+        fclose(f);
     }
-    fwrite(p1->content, sizeof(uint8_t), p1->size, f);
-    fclose(f);
     destroy_lsb(l);
     destroy_carrier(c);
     destroy_payload(p);
@@ -127,12 +129,14 @@ void lsb4_insert_1()
     //poner total size en la estructura de hf
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(4);
-    lsb_steg(l, c, p);
-    payload p1 = extract_payload(l, c);
-    //payload_ext(p);
-    FILE *f = fopen("tests_output/lbs4_insert_text1.txt", "w");
-    fwrite(p1->content, sizeof(uint8_t), p1->size, f);
-    fclose(f);
+    int status = lsb_steg(l, c, p);
+    if(status == 0){
+        payload p1 = extract_payload(l, c);
+        //payload_ext(p);
+        FILE *f = fopen("tests_output/lbs4_insert_text1.txt", "w");
+        fwrite(p1->content, sizeof(uint8_t), p1->size, f);
+        fclose(f);
+    }
     destroy_lsb(l);
     destroy_carrier(c);
     destroy_payload(p);
@@ -149,11 +153,13 @@ void lsb1_insert_2()
     uint8_t *payload_insert = concat_hf(example_hf);
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(1);
-    lsb_steg(l, c, p);
-    payload p1 = extract_payload(l, c);
-    FILE *f = fopen("tests_output/lbs1_insert_text2.txt", "w");
-    fwrite(p1->content, sizeof(uint8_t), p1->size, f);
-    fclose(f);
+    int status = lsb_steg(l, c, p);
+    if(status == 0){
+        payload p1 = extract_payload(l, c);
+        FILE *f = fopen("tests_output/lbs1_insert_text2.txt", "w");
+        fwrite(p1->content, sizeof(uint8_t), p1->size, f);
+        fclose(f);
+    }
     destroy_lsb(l);
     destroy_carrier(c);
     destroy_payload(p);
@@ -170,11 +176,13 @@ void lsb1_insert_3()
     uint8_t *payload_insert = concat_hf(example_hf);
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(1);
-    lsb_steg(l, c, p);
-    payload p1 = extract_payload(l, c);
-    FILE *f = fopen("tests_output/lsb1_insert_text4.txt", "w");
-    fwrite(p1->content, sizeof(uint8_t), p1->size, f);
-    fclose(f);
+    int status = lsb_steg(l, c, p);
+    if(status == 0){
+        payload p1 = extract_payload(l, c);
+        FILE *f = fopen("tests_output/lsb1_insert_text4.txt", "w");
+        fwrite(p1->content, sizeof(uint8_t), p1->size, f);
+        fclose(f);
+    }
     destroy_lsb(l);
     destroy_carrier(c);
     destroy_payload(p);
@@ -191,12 +199,13 @@ void lsb4_insert_4()
     uint8_t *payload_insert = concat_hf(example_hf);
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(4);
-    lsb_steg(l, c, p);
+    int status = lsb_steg(l, c, p);
+    if(status == 0){
     payload p1 = extract_payload(l, c);
-    FILE *f = fopen("tests_output/lsb4_insert_text4.txt", "w");
-    fwrite(p1->content, sizeof(uint8_t), p1->size, f);
-
-    fclose(f);
+        FILE *f = fopen("tests_output/lsb4_insert_text4.txt", "w");
+        fwrite(p1->content, sizeof(uint8_t), p1->size, f);
+        fclose(f);
+    }
     destroy_lsb(l);
     destroy_carrier(c);
     destroy_payload(p);
