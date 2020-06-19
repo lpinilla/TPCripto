@@ -70,19 +70,21 @@ void lsb_1()
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     lsb l = create_lsb(1);
     payload p = extract_payload(l, c);
-    //  payload_ext(p);
-
-    FILE *f = fopen("tests_output/lsb1_extract_test.png", "w");
-    if (f == NULL)
-    {
-        printf("Could not create file!\n");
-        return;
+    if(p != NULL){
+        //  payload_ext(p);
+        FILE *f = fopen("tests_output/lsb1_extract_test.png", "w");
+        if (f == NULL)
+        {
+            printf("Could not create file!\n");
+            return;
+        }
+        fwrite(p->content, sizeof(uint8_t), p->size, f);
+        fclose(f);
+        destroy_payload(p);
     }
-    fwrite(p->content, sizeof(uint8_t), p->size, f);
-    fclose(f);
     destroy_lsb(l);
     destroy_carrier(c);
-    destroy_payload(p);
+
     assert_true(1 == 1);
 }
 
@@ -93,18 +95,19 @@ void lsb_4()
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     lsb l = create_lsb(4);
     payload p = extract_payload(l, c);
-   
-    FILE *f = fopen("tests_output/lsb4_extract_test.png", "w");
-    if (f == NULL)
-    {
-        printf("Could not create file!\n");
-        return;
+    if(p != NULL){
+        FILE *f = fopen("tests_output/lsb4_extract_test.png", "w");
+        if (f == NULL)
+        {
+            printf("Could not create file!\n");
+            return;
+        }
+        fwrite(p->content, sizeof(uint8_t), p->size, f);
+        fclose(f);
+        destroy_payload(p);
     }
-    fwrite(p->content, sizeof(uint8_t), p->size, f);
-    fclose(f);
     destroy_lsb(l);
     destroy_carrier(c);
-    destroy_payload(p);
     assert_true(1 == 1);
 }
 
@@ -114,33 +117,23 @@ void ladoLSB4aes256ofb()
     bmp_file bmp_f = read_bmp("files_for_testing/ladoLSB4aes256ofb.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-
     lsb l = create_lsb(4);
-
     payload p = extract_payload(l, c);
+    if(p != NULL){
+        uint8_t *plaintext = malloc(p->size);
+        int d = decrypt(plaintext, "secreto", p->content, p->size, ofb, aes256);
+        FILE *f = fopen("tests_output/ladoLSB4aes256ofb_extract_test.png", "w");
+        if (f == NULL){
+            printf("Could not create file!\n");
+            return;
+        }
 
-    uint8_t *plaintext = malloc(p->size);
-    //uint8_t *cyphertext = malloc(p->size+T+E);
-
-
-    int d = decrypt(plaintext, "secreto", p->content, p->size, ofb, aes256);
-    //printf("decrypt size: %d\n", d);
-    //  for (int i = 0; i < 10; i++)
-    //     {
-    //         printf("end %c\n", *(plaintext + p->size - i));
-    //     }
-    FILE *f = fopen("tests_output/ladoLSB4aes256ofb_extract_test.png", "w");
-    if (f == NULL)
-    {
-        printf("Could not create file!\n");
-        return;
+        //muy importante el +4 para saltear el tamanio de lo encriptado, el -4 para descontar el tamanio y -5 para extension
+        fwrite(plaintext + 4, sizeof(uint8_t), d - T-E, f);
+        fclose(f);
+        destroy_payload(p);
     }
-
-    //muy importante el +4 para saltear el tamanio de lo encriptado, el -4 para descontar el tamanio y -5 para extension
-    fwrite(plaintext + 4, sizeof(uint8_t), d - T-E, f);
-    fclose(f);
     destroy_lsb(l);
     destroy_carrier(c);
-    destroy_payload(p);
     assert_true(1 == 1);
 }

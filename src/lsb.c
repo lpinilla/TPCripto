@@ -102,7 +102,7 @@ payload extract_payload(lsb l, carrier c){
     if(l == NULL || c == NULL) return NULL;
     payload p = (payload) malloc(sizeof(t_payload));
     p->size = extract_payload_size(l, c, 0);
-    if(p->size >= 100000000) return NULL; //TODO: SACAR
+    if(p->size >= c->c_size) return NULL;
     p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size +5);
     for(int i = 0; i < p->size+5; i++) p->content[i] = extract_byte(l, c);
     // for(int j=0;j<5;j++){
@@ -170,7 +170,7 @@ payload extract_payload_lsbi(carrier c, uint8_t *rc4_key)
     RC4(rc4_key, prep_size, payload_size_decript, size_rc4);
     //convierto payload_size_decript de hexa a numero decimal
     p->size = hex_to_dec(payload_size_decript,size_rc4);
-
+    if(p->size >= c->c_size) return NULL;
     p->content = (uint8_t *)malloc(sizeof(uint8_t) * payload_size_enc);
     for (long i = 0; i < p->size + 5; i++)
         p->content[i] = extract_byte_lsbi(l, c, hop, i + 4);

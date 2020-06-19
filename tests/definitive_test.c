@@ -38,17 +38,19 @@ void roma_test(){
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     lsb l = create_lsb(1);
     payload p = extract_payload(l, c);
-    FILE *f = fopen("tests_output/roma_extracted.png", "w");
-    if (f == NULL)
-    {
-        printf("Could not create file!\n");
-        return;
+    if(p != NULL){
+        FILE *f = fopen("tests_output/roma_extracted.png", "w");
+        if (f == NULL)
+        {
+            printf("Could not create file!\n");
+            return;
+        }
+        fwrite(p->content, sizeof(uint8_t), p->size, f);
+        fclose(f);
+        destroy_payload(p);
     }
-    fwrite(p->content, sizeof(uint8_t), p->size, f);
-    fclose(f);
     destroy_lsb(l);
     destroy_carrier(c);
-    destroy_payload(p);
     assert_true(1 == 1);
 }
 
@@ -58,21 +60,21 @@ void lsb4_test(){
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     lsb l = create_lsb(4);
     payload p = extract_payload(l, c);
-
-    uint8_t *plaintext = malloc(p->size);
-    int d = decrypt(plaintext, "camuflado", p->content, p->size, cfb, des);
-    FILE *f = fopen("tests_output/hugo4_extracted.pdf", "w+"); //TODO: no hardcodear la extensión
-    if (f == NULL){
-        printf("Could not create file!\n");
-        return;
+    if(p != NULL){
+        uint8_t *plaintext = malloc(p->size);
+        int d = decrypt(plaintext, "camuflado", p->content, p->size, cfb, des);
+        FILE *f = fopen("tests_output/hugo4_extracted.pdf", "w+"); //TODO: no hardcodear la extensión
+        if (f == NULL){
+            printf("Could not create file!\n");
+            return;
+        }
+        fwrite(plaintext+4, sizeof(uint8_t), d, f);
+        fclose(f);
+        destroy_payload(p);
     }
-    fwrite(plaintext+4, sizeof(uint8_t), d, f);
-    fclose(f);
     destroy_lsb(l);
     destroy_carrier(c);
-    destroy_payload(p);
     assert_true(1 == 1);
-
 }
 
 void lsbi_test(void){
@@ -81,15 +83,17 @@ void lsbi_test(void){
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
     payload p = extract_payload_lsbi(c, key);
-    FILE *f = fopen("tests_output/budapest_extracted.png", "w+");
-    if (f == NULL){
-        printf("Could not create file!\n");
-        return;
+    if(p != NULL){
+        FILE *f = fopen("tests_output/budapest_extracted.png", "w+");
+        if (f == NULL){
+            printf("Could not create file!\n");
+            return;
+        }
+        //escribo el plaintext en el file, sin el tamanio inicial ni la extension al final
+        fwrite(p->content, sizeof(uint8_t), p->size, f);
+        fclose(f);
+        destroy_payload(p);
     }
-    //escribo el plaintext en el file, sin el tamanio inicial ni la extension al final
-    fwrite(p->content, sizeof(uint8_t), p->size, f);
-    fclose(f);
     destroy_carrier(c);
-    destroy_payload(p);
     assert_true(1 == 1);
 }
