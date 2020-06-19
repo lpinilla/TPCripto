@@ -39,7 +39,13 @@ void roma_test(){
     lsb l = create_lsb(1);
     payload p = extract_payload(l, c);
     if(p != NULL){
-        FILE *f = fopen("tests_output/roma_extracted.png", "w");
+        char * path = "tests_output/roma_extracted";
+        size_t file_name_size = (strlen(path) + 6) * sizeof(char);
+        char * file_name = malloc(file_name_size * sizeof(char));
+        memset(file_name, 0, file_name_size);
+        file_name = strcat(file_name, path);
+        file_name = strcat(file_name, (char *)&p->content[p->size]);
+        FILE *f = fopen(file_name, "w");
         if (f == NULL)
         {
             printf("Could not create file!\n");
@@ -63,7 +69,13 @@ void lsb4_test(){
     if(p != NULL){
         uint8_t *plaintext = malloc(p->size);
         int d = decrypt(plaintext, "camuflado", p->content, p->size, cfb, des);
-        FILE *f = fopen("tests_output/hugo4_extracted.wmv", "w+"); //TODO: no hardcodear la extensión
+        char * path = "tests_output/hugo4_extracted";
+        size_t file_name_size = strlen(path) + 5;
+        char * file_name = malloc(file_name_size * sizeof(char));
+        memset(file_name, 0, file_name_size);
+        file_name = strcat(file_name, path);
+        file_name = strcat(file_name, (char *) plaintext +d -T - 1);
+        FILE *f = fopen(file_name, "w");
         if (f == NULL){
             printf("Could not create file!\n");
             return;
@@ -83,7 +95,13 @@ void lsbi_test(void){
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     payload p = extract_payload_lsbi(c);
     if(p != NULL){
-        FILE *f = fopen("tests_output/budapest_extracted.pdf", "w+");
+        char * path = "tests_output/budapest_extracted";
+        size_t file_name_size = strlen(path) + 5;
+        char * file_name = malloc(file_name_size * sizeof(char));
+        memset(file_name, 0, file_name_size);
+        file_name = strcat(file_name, path);
+        file_name = strcat(file_name, (char *) &p->content[p->size]);
+        FILE *f = fopen(file_name, "w");
         if (f == NULL){
             printf("Could not create file!\n");
             return;

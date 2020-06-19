@@ -98,16 +98,14 @@ uint32_t extract_payload_size(lsb l, carrier c, int hop){
     return (bytes[0] << 24) ^ (bytes[1] << 16) ^ (bytes[2] << 8) ^ bytes[3];
 }
 
+
 payload extract_payload(lsb l, carrier c){
     if(l == NULL || c == NULL) return NULL;
     payload p = (payload) malloc(sizeof(t_payload));
     p->size = extract_payload_size(l, c, 0);
     if(p->size >= c->c_size) return NULL;
-    p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size +5);
-    for(int i = 0; i < p->size+5; i++) p->content[i] = extract_byte(l, c);
-    // for(int j=0;j<5;j++){
-    //     printf("extract: %c\n",p->content[p->size+j]);
-    // }
+    p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size + 5);
+    for(int i = 0; i < p->size + 5; i++) p->content[i] = extract_byte(l, c);
     return p;
 }
 
@@ -174,20 +172,16 @@ payload extract_payload_lsbi(carrier c){
     //convierto payload_size_decript de hexa a numero decimal
     p->size = hex_to_dec(payload_size_decript,size_rc4);
     if(p->size >= c->c_size) return NULL;
-    p->content = (uint8_t *)malloc(sizeof(uint8_t) * payload_size_enc);
-    for (long i = 0; i < p->size + 5; i++)
+    p->content = (uint8_t *)malloc(sizeof(uint8_t) * (p->size + 4));
+    for (long i = 0; i < p->size + 4; i++)
         p->content[i] = extract_byte_lsbi(l, c, hop, i + 4);
-    
     // ya tengo el contenido encriptado con RC4 en p->content, y el size desencriptado en p->size, y el size encriptado en 
     // payload_size_enc y el size encriptado en 4 bytes en prep_size
-    
-    //en plaintext vamos a guardar el payload desencriptado mas el tamanio al principio
-    //el tamanio es 4(bytes para el tamanio)+tamanio del archivo(p->size)+5(extencion)
+    //en plaintext vamos a guardar el payload desencriptado mas el tamaño al principio
+    //el tamaño es 4(bytes para el tamaño)+tamaño del archivo(p->size)+5(extencion)
     uint8_t *plaintext = malloc(sizeof(uint8_t) * (p->size+RC4_T+RC4_E));
-    
-    //en final guardamos tamanio encriptado + payload encriptado
+    //en final guardamos tamaño encriptado + payload encriptado
     uint8_t *final = malloc(p->size +RC4_T+RC4_E);
-    
     //copio al princio de final el size encriptado
     memcpy(final,prep_size,RC4_T);
 
@@ -197,7 +191,7 @@ payload extract_payload_lsbi(carrier c){
     //desencripto final y lo guardo en plaintext
     RC4(rc4_key, final, plaintext, p->size+RC4_T+RC4_E);
     //guardo en p->content el contenido desencriptado
-    memcpy(p->content,plaintext+RC4_T,p->size);
+    memcpy(p->content,plaintext+RC4_T,p->size+RC4_T);
     destroy_lsb(l);
     return p;
 }

@@ -1,6 +1,7 @@
 #include <payload.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 payload create_payload(uint8_t* content, long size) {
   payload p = (payload)malloc(sizeof(t_payload));
