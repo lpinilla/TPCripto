@@ -40,7 +40,7 @@ $(FW):
 
 
 clean:
-	-@rm -rf .objs/*.o *.o *.tasty
+	-@rm -rf .objs/*.o *.o *.tasty tests_output/*
 	@echo "\e[36m[tests cleaned]\e[0m"
 
 #Corremos la librería sobre los .tasty

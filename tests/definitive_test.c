@@ -18,14 +18,12 @@
 void roma_test();
 void lsb4_test();
 void lsbi_test(); //con la imagen budapest
-void lsb_enchanced_check();
 
 int main(){
     create_suite("Ejemplos Definitivos");
-    //add_test(roma_test);
-    //add_test(lsb4_test);
+    add_test(roma_test);
+    add_test(lsb4_test);
     add_test(lsbi_test);
-    //add_test(lsb_enchanced_check);
     run_suite();
     clear_suite();
 }
@@ -35,12 +33,12 @@ int main(){
 //en strings back.bmp estaba la pass "camuflado"
 
 void roma_test(){
-    bmp_file bmp_f = read_bmp("roma.bmp");
+    bmp_file bmp_f = read_bmp("archivos_finales/roma.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     lsb l = create_lsb(1);
     payload p = extract_payload(l, c);
-    FILE *f = fopen("roma_inside/extract_roma.png", "w");
+    FILE *f = fopen("tests_output/roma_extracted.png", "w");
     if (f == NULL)
     {
         printf("Could not create file!\n");
@@ -55,16 +53,15 @@ void roma_test(){
 }
 
 void lsb4_test(){
-    bmp_file bmp_f = read_bmp("hugo4.bmp");
+    bmp_file bmp_f = read_bmp("archivos_finales/hugo4.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-    printf("hugo %d %d %d %d\n",bmp_h->size,bmp_h->bits_per_pixel,bmp_h->width_px, bmp_h->height_px);
     lsb l = create_lsb(4);
     payload p = extract_payload(l, c);
 
     uint8_t *plaintext = malloc(p->size);
     int d = decrypt(plaintext, "camuflado", p->content, p->size, cfb, des);
-    FILE *f = fopen("lsb4/magia", "w+");
+    FILE *f = fopen("tests_output/hugo4_extracted.pdf", "w+"); //TODO: no hardcodear la extensión
     if (f == NULL){
         printf("Could not create file!\n");
         return;
@@ -79,12 +76,12 @@ void lsb4_test(){
 }
 
 void lsbi_test(void){
-    bmp_file bmp_f = read_bmp("budapest.bmp");
+    bmp_file bmp_f = read_bmp("archivos_finales/budapest.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
     uint8_t *key = malloc(RC4_N); //48bits necesarios para la key
     payload p = extract_payload_lsbi(c, key);
-    FILE *f = fopen("lsbi/testing", "w+");
+    FILE *f = fopen("tests_output/budapest_extracted.png", "w+");
     if (f == NULL){
         printf("Could not create file!\n");
         return;
@@ -94,27 +91,5 @@ void lsbi_test(void){
     fclose(f);
     destroy_carrier(c);
     destroy_payload(p);
-    assert_true(1 == 1);
-}
-
-void lsb_enchanced_check(){
-    bmp_file bmp_f = read_bmp("back.bmp");
-    bmp_header bmp_h = bmp_f->header;
-    long size = bmp_h->image_size_bytes;
-    carrier c = create_carrier(bmp_f->data, size, bmp_h->width_px, bmp_h->height_px);
-    for(int i = 0; i < size; i++){
-        bmp_f->data[i] &= 0x01;
-        bmp_f->data[i] = bmp_f->data[i] << 7;
-    }
-    FILE *f = fopen("back_inside/enhancing_lsb", "w");
-    if (f == NULL)
-    {
-        printf("Could not create file!\n");
-        return;
-    }
-    fwrite(bmp_h, sizeof(uint8_t), 54, f);
-    fwrite(bmp_f->data, sizeof(uint8_t), size, f);
-    fclose(f);
-    destroy_carrier(c);
     assert_true(1 == 1);
 }

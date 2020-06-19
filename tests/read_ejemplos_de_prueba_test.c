@@ -24,9 +24,9 @@ int main()
 {
 
     create_suite("Extract ejemplos prueba test");
-    //add_test(lsb_1);
-    //add_test(lsb_4);
-    //add_test(ladoLSB4aes256ofb);
+    add_test(lsb_1);
+    add_test(lsb_4);
+    add_test(ladoLSB4aes256ofb);
     add_test(lsb_i);
     run_suite();
     clear_suite();
@@ -49,11 +49,8 @@ void lsb_i()
     // array[3] = (int)((p->size & 0XFF));
 
     // RC4(key,array,sizeencript,T);
-
-
-    FILE *f = fopen("files_for_testing/lsbi_extract_test.png", "w+");
-    if (f == NULL)
-    {
+    FILE *f = fopen("tests_output/lsbi_extract_test.png", "w+");
+    if (f == NULL){
         printf("Could not create file!\n");
         return;
     }
@@ -75,7 +72,7 @@ void lsb_1()
     payload p = extract_payload(l, c);
     //  payload_ext(p);
 
-    FILE *f = fopen("test_create_files/lsb1_extract_test.png", "w");
+    FILE *f = fopen("tests_output/lsb1_extract_test.png", "w");
     if (f == NULL)
     {
         printf("Could not create file!\n");
@@ -97,7 +94,7 @@ void lsb_4()
     lsb l = create_lsb(4);
     payload p = extract_payload(l, c);
    
-    FILE *f = fopen("test_create_files/lsb4_extract_test.png", "w");
+    FILE *f = fopen("tests_output/lsb4_extract_test.png", "w");
     if (f == NULL)
     {
         printf("Could not create file!\n");
@@ -132,7 +129,7 @@ void ladoLSB4aes256ofb()
     //     {
     //         printf("end %c\n", *(plaintext + p->size - i));
     //     }
-    FILE *f = fopen("test_create_files/ladoLSB4aes256ofb_extract_test.png", "w");
+    FILE *f = fopen("tests_output/ladoLSB4aes256ofb_extract_test.png", "w");
     if (f == NULL)
     {
         printf("Could not create file!\n");
