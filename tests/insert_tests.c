@@ -42,7 +42,7 @@ void lsb1_insert_image_1()
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
 
-    hfs example_hf = process_hf("original.png");
+    hfs example_hf = process_hf("tests_input/gladiator_chicken.png");
     uint8_t *payload_insert = concat_hf(example_hf);
 
     //poner total size en la estructura de hf
@@ -51,7 +51,7 @@ void lsb1_insert_image_1()
     lsb_steg(l, c, p);
     payload p1 = extract_payload(l, c);
 
-    FILE *f = fopen("test_create_files/lbs1_insert_original.png", "w");
+    FILE *f = fopen("tests_output/lbs1_insert_original.png", "w");
     if (f == NULL)
     {
         printf("File Not Found!\n");
@@ -72,7 +72,7 @@ void lsb4_insert_image_0()
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
 
-    hfs example_hf = process_hf("original.png");
+    hfs example_hf = process_hf("tests_input/gladiator_chicken.png");
     uint8_t *payload_insert = concat_hf(example_hf);
 
     //poner total size en la estructura de hf
@@ -81,7 +81,7 @@ void lsb4_insert_image_0()
     lsb_steg(l, c, p);
     payload p1 = extract_payload(l, c);
 
-    FILE *f = fopen("test_create_files/lbs4_insert_original.png", "w");
+    FILE *f = fopen("tests_output/lbs4_insert_original.png", "w");
     fwrite(p1->content, sizeof(uint8_t), p1->size, f);
     fclose(f);
     destroy_lsb(l);
@@ -91,28 +91,19 @@ void lsb4_insert_image_0()
 }
 
 //inserta con lsb1 a ladoLSB1.bmp el texto test1.txt
-void lsb1_insert_0()
-{
-
+void lsb1_insert_0(){
     bmp_file bmp_f = read_bmp("files_for_testing/ladoLSB1.bmp");
-
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-
-    hfs example_hf = process_hf("test1.txt");
-
+    hfs example_hf = process_hf("tests_input/test1.txt");
     uint8_t *payload_insert = concat_hf(example_hf);
-
     //poner total size en la estructura de hf
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(1);
     lsb_steg(l, c, p);
     payload p1 = extract_payload(l, c);
-   // payload_ext(p);
-
-    FILE *f = fopen("test_create_files/lbs1_insert_text1.txt", "w");
-    if (f == NULL)
-    {
+    FILE *f = fopen("tests_output/lbs1_insert_text1.txt", "w+");
+    if (f == NULL) {
         printf("File Not Found!\n");
         return;
     }
@@ -131,7 +122,7 @@ void lsb4_insert_1()
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
 
-    hfs example_hf = process_hf("test1.txt");
+    hfs example_hf = process_hf("tests_input/test1.txt");
     uint8_t *payload_insert = concat_hf(example_hf);
     //poner total size en la estructura de hf
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
@@ -139,8 +130,7 @@ void lsb4_insert_1()
     lsb_steg(l, c, p);
     payload p1 = extract_payload(l, c);
     //payload_ext(p);
-
-    FILE *f = fopen("test_create_files/lbs4_insert_text1.txt", "w");
+    FILE *f = fopen("tests_output/lbs4_insert_text1.txt", "w");
     fwrite(p1->content, sizeof(uint8_t), p1->size, f);
     fclose(f);
     destroy_lsb(l);
@@ -155,13 +145,13 @@ void lsb1_insert_2()
     bmp_file bmp_f = read_bmp("files_for_testing/ladoLSB1.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-    hfs example_hf = process_hf("test2.txt");
+    hfs example_hf = process_hf("tests_input/test2.txt");
     uint8_t *payload_insert = concat_hf(example_hf);
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(1);
     lsb_steg(l, c, p);
     payload p1 = extract_payload(l, c);
-    FILE *f = fopen("test_create_files/lbs1_insert_text2.txt", "w");
+    FILE *f = fopen("tests_output/lbs1_insert_text2.txt", "w");
     fwrite(p1->content, sizeof(uint8_t), p1->size, f);
     fclose(f);
     destroy_lsb(l);
@@ -176,13 +166,13 @@ void lsb1_insert_3()
     bmp_file bmp_f = read_bmp("files_for_testing/ladoLSB1.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-    hfs example_hf = process_hf("test4.txt");
+    hfs example_hf = process_hf("tests_input/test4.txt");
     uint8_t *payload_insert = concat_hf(example_hf);
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(1);
     lsb_steg(l, c, p);
     payload p1 = extract_payload(l, c);
-    FILE *f = fopen("test_create_files/lsb1_insert_text4.txt", "w");
+    FILE *f = fopen("tests_output/lsb1_insert_text4.txt", "w");
     fwrite(p1->content, sizeof(uint8_t), p1->size, f);
     fclose(f);
     destroy_lsb(l);
@@ -197,13 +187,13 @@ void lsb4_insert_4()
     bmp_file bmp_f = read_bmp("files_for_testing/ladoLSB1.bmp");
     bmp_header bmp_h = bmp_f->header;
     carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes, bmp_h->width_px, bmp_h->height_px);
-    hfs example_hf = process_hf("test4.txt");
+    hfs example_hf = process_hf("tests_input/test4.txt");
     uint8_t *payload_insert = concat_hf(example_hf);
     payload p = create_payload(payload_insert, sizeof(uint32_t) + example_hf->size + example_hf->ext_size);
     lsb l = create_lsb(4);
     lsb_steg(l, c, p);
     payload p1 = extract_payload(l, c);
-    FILE *f = fopen("test_create_files/lsb4_insert_text4.txt", "w");
+    FILE *f = fopen("tests_output/lsb4_insert_text4.txt", "w");
     fwrite(p1->content, sizeof(uint8_t), p1->size, f);
 
     fclose(f);

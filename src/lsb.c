@@ -102,8 +102,7 @@ payload extract_payload(lsb l, carrier c){
     if(l == NULL || c == NULL) return NULL;
     payload p = (payload) malloc(sizeof(t_payload));
     p->size = extract_payload_size(l, c, 0);
-    printf("size %ld \n", p->size);
-    if(p->size >= 100000000) return NULL;
+    if(p->size >= 100000000) return NULL; //TODO: SACAR
     p->content = (uint8_t *) malloc(sizeof(uint8_t) * p->size +5);
     for(int i = 0; i < p->size+5; i++) p->content[i] = extract_byte(l, c);
     // for(int j=0;j<5;j++){
@@ -114,6 +113,7 @@ payload extract_payload(lsb l, carrier c){
 
 void lsb_steg(lsb l, carrier c, payload p){
     if(l == NULL || c == NULL || p == NULL) return;
+    if( (p->size * (BYTE_SIZE/ l->n)) >= c->c_size ) return; //TODO: mejorar
     jobs total_jobs = divide_jobs(l, c, p, BYTE_INJECTIONS_PER_JOB);
     pthread_t threads[total_jobs->size];
     routine_args args = (routine_args) malloc(sizeof(t_routine_args) * total_jobs->size);
