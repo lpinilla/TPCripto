@@ -29,7 +29,7 @@ int main(){
     // add_test(roma_test);
     // add_test(lsb4_test);
     // add_test(lsbi_test);
-    add_test(embed_modifies_file_test);
+    // add_test(embed_modifies_file_test);
     add_test(simple_inyect_extract_test);
     run_suite();
     clear_suite();
@@ -54,23 +54,27 @@ void simple_inyect_extract_test() {
     struct options extract_options;
 
     embed_options.operation = embed;
-    strcpy(embed_options.in, "files_for_testing/lsb1_test.png");
-    strcpy(embed_options.p, "files_for_testing/sample.bmp");
+    strcpy(embed_options.in, "tests_input/gladiator_chicken.png");
+    strcpy(embed_options.p, "files_for_testing/ladoLSB1.bmp");
     strcpy(embed_options.out, "tests_input/sample_inyectado2.bmp");
     embed_options.stego_type = lsb4;
-    embed_options.encrypted = false;
+    embed_options.encrypted = true;
+    embed_options.encription_mode = cbc;
+    embed_options.encription_algorithm = aes256;
+    strcpy(embed_options.encription_password, "password");
 
     extract_options.operation = extract;
     strcpy(extract_options.p, "tests_input/sample_inyectado2.bmp");
     strcpy(extract_options.out, "tests_input/sample_extraido.png");
     extract_options.stego_type = lsb4;
-    extract_options.encrypted = false;
+    extract_options.encrypted = true;
+    extract_options.encription_mode = cbc;
+    extract_options.encription_algorithm = aes256;
+    strcpy(extract_options.encription_password, "password");
 
     _embed(&embed_options);
     _extract(&extract_options);
-    assert_true(filesEqual("tests_input/sample_extraido.png", "files_for_testing/lsb1_test.png"));
-    UNUSED(extract_options);
-    UNUSED(embed_options);
+    assert_true(filesEqual("tests_input/sample_extraido.png", "tests_input/gladiator_chicken.png"));
 
 }
 

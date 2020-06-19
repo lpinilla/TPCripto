@@ -56,14 +56,18 @@ void _embed(struct options *options) {
   fclose(in_f);
   // Paso 2: Encriptar en caso de ser necesario
   uint8_t *in = in_content;
+  
   if (options->encrypted) {
     ciphertext = malloc(in_size * 2);  // Reserve twice the space just in case
     int cipher_size =
         encrypt(in_content, in_size, options->encription_password, ciphertext,
                 options->encription_mode, options->encription_algorithm);
     in = ciphertext;
+    printf("Antes de encryptar, in_size = %ld\n", in_size);
     in_size = (long)cipher_size;
+    printf("Despues de desencriptar, in_size = %ld\n", in_size);
   }
+  
 
   if (!copy_file(options->out, options->p)) {
       goto cleanup;
@@ -73,17 +77,12 @@ void _embed(struct options *options) {
   carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes,
                              bmp_h->width_px, bmp_h->height_px);
 
-  size_t header_size = sizeof(t_bmp_header);                 
-  uint8_t *output = malloc(c->c_size + header_size);
-  memcpy(output, bmp_h, header_size);
-  memcpy(output + header_size, c->content, c->c_size);
-  save_file(output, c->c_size + header_size, options->out);
-  free(output);
-  // hfs hf = process_hf(options->in);
-  // uint8_t *payload_insert = concat_hf(hf);
-  // payload p = create_payload(payload_insert, sizeof(uint32_t) + hf->size + hf->ext_size);
+  save_file(in, in_size, "/tmp/stego_tmp");
+  hfs hf = process_hf("/tmp/stego_tmp");
+  uint8_t *payload_insert = concat_hf(hf);
+  payload p = create_payload(payload_insert, sizeof(uint32_t) + hf->size + hf->ext_size);
   
-  payload p = create_payload(in, in_size);
+  // payload p = create_payload(in, in_size);
 
   UNUSED(in);
   enum stego_types lsb_type = options->stego_type;
@@ -92,7 +91,6 @@ void _embed(struct options *options) {
     steg_return = lsb_i_steg(c, p);
   } else {
     if (lsb_type == lsb1) {
-      printf("Calling lsb steg 1\n");
       lsb l = create_lsb(1);
       steg_return = lsb_steg(l, c, p);
     } else if (lsb_type == lsb4) {
@@ -103,9 +101,13 @@ void _embed(struct options *options) {
       return;
     }
   }
-
-  
   printf("Steg returned: %d\n", steg_return);
+  size_t header_size = sizeof(t_bmp_header);                 
+  uint8_t *output = malloc(c->c_size + header_size);
+  memcpy(output, bmp_h, header_size);
+  memcpy(output + header_size, c->content, c->c_size);
+  save_file(output, c->c_size + header_size, options->out);
+  free(output);
 cleanup:
   // Cleanup
   if (ciphertext != NULL) free(ciphertext);
@@ -115,6 +117,7 @@ cleanup:
 void _extract(struct options *options) {
   // A tener en cuenta: el tipo payload es un puntero
   payload pl = get_payload(options);
+  
   if (pl == 0) {
     printf("Error extracting payload (returned 0)\n");
     return;
@@ -127,12 +130,11 @@ void _extract(struct options *options) {
     int d =
         decrypt(plaintext, options->encription_password, pl->content, pl->size,
                 options->encription_mode, options->encription_algorithm);
-
     size = d - RC4_T - RC4_E;
     output = plaintext;
     // muy importante el +4 para saltear el tamanio de lo encriptado, el -4 para
     // descontar el tamanio y -5 para extension
-    output += 4;
+    // output += 4;
   }
   save_file(output, size, options->out);
   // Cleanup
