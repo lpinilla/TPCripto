@@ -78,6 +78,7 @@ void _embed(struct options *options) {
   memcpy(output, bmp_h, header_size);
   memcpy(output + header_size, c->content, c->c_size);
   save_file(output, c->c_size + header_size, options->out);
+  free(output);
   // hfs hf = process_hf(options->in);
   // uint8_t *payload_insert = concat_hf(hf);
   // payload p = create_payload(payload_insert, sizeof(uint32_t) + hf->size + hf->ext_size);
