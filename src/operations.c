@@ -43,32 +43,31 @@ payload get_payload(struct options *options) {
 
 void _embed(struct options *options) {
   uint8_t *ciphertext = NULL;
-  // Paso 1: Abrir los archivos de In y Portador
-  FILE *in_f = fopen(options->in, "r");
-  if (in_f == NULL) {
-    printf("[ERROR] Could not open file to hide!\n");
-    return;
-  }
-
-  long in_size = get_file_size(in_f);
-  uint8_t in_content[in_size];
-  in_size = fread(in_content, sizeof(uint8_t), in_size, in_f);
-  fclose(in_f);
-  // Paso 2: Encriptar en caso de ser necesario
-  uint8_t *in = in_content;
+  // Paso 1: Crear size||data||ext a partir del archivo de entrada
+  hfs hf = process_hf(options->in);
+  uint8_t *in = concat_hf(hf);
+  long in_size = sizeof(uint32_t) + hf->size + hf->ext_size;
   
+  printf("in size: %ld\n", in_size);
+  // Paso 2: Encriptar en caso de ser necesario
   if (options->encrypted) {
     ciphertext = malloc(in_size * 2);  // Reserve twice the space just in case
     int cipher_size =
-        encrypt(in_content, in_size, options->encription_password, ciphertext,
+        encrypt(in, in_size, options->encription_password, ciphertext + sizeof(uint32_t),
                 options->encription_mode, options->encription_algorithm);
+    uint32_t c_size = (uint32_t) cipher_size;
     in = ciphertext;
+    ciphertext[0] = c_size >> 24;
+    ciphertext[1] = c_size >> 16;
+    ciphertext[2] = c_size >> 8;
+    ciphertext[3] = c_size;
     printf("Antes de encryptar, in_size = %ld\n", in_size);
-    in_size = (long)cipher_size;
-    printf("Despues de desencriptar, in_size = %ld\n", in_size);
+    printf("Cipher size: %d\n", cipher_size);
+    printf("Size of uint32_t: %ld\n", sizeof(uint32_t));
+    in_size = (long)cipher_size + sizeof(uint32_t);  
+    printf("despues de encryptar, in_size = %ld\n", in_size);
   }
   
-
   if (!copy_file(options->out, options->p)) {
       goto cleanup;
   }
@@ -77,14 +76,7 @@ void _embed(struct options *options) {
   carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes,
                              bmp_h->width_px, bmp_h->height_px);
 
-  save_file(in, in_size, "/tmp/stego_tmp");
-  hfs hf = process_hf("/tmp/stego_tmp");
-  uint8_t *payload_insert = concat_hf(hf);
-  payload p = create_payload(payload_insert, sizeof(uint32_t) + hf->size + hf->ext_size);
-  
-  // payload p = create_payload(in, in_size);
-
-  UNUSED(in);
+  payload p = create_payload(in, sizeof(uint32_t) + hf->size + hf->ext_size);
   enum stego_types lsb_type = options->stego_type;
   int steg_return;
   if (lsb_type == lsbi) {
@@ -102,11 +94,14 @@ void _embed(struct options *options) {
     }
   }
   printf("Steg returned: %d\n", steg_return);
+  
   size_t header_size = sizeof(t_bmp_header);                 
   uint8_t *output = malloc(c->c_size + header_size);
   memcpy(output, bmp_h, header_size);
   memcpy(output + header_size, c->content, c->c_size);
   save_file(output, c->c_size + header_size, options->out);
+  printf("header size: %ld\n", header_size);
+  printf("bmp data size: %d\n", bmp_h->image_size_bytes);
   free(output);
 cleanup:
   // Cleanup
@@ -134,7 +129,7 @@ void _extract(struct options *options) {
     output = plaintext;
     // muy importante el +4 para saltear el tamanio de lo encriptado, el -4 para
     // descontar el tamanio y -5 para extension
-    // output += 4;
+    output += 4;
   }
   save_file(output, size, options->out);
   // Cleanup
