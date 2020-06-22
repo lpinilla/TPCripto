@@ -53,30 +53,36 @@ void simple_inyect_extract_test() {
     struct options embed_options;
     struct options extract_options;
 
+    char * hidden_file = "tests_input/test1.txt";
+    char * output_file = "tests_output/test1.txt";
+    
+    char * carrier_file = "files_for_testing/test.bmp";
+    char * inyected_file= "tests_output/sample_inyectado3.bmp";
+
     //embed options
     embed_options.operation = embed;
-    strcpy(embed_options.in, "tests_input/gladiator_chicken.png");
-    strcpy(embed_options.p, "files_for_testing/sample.bmp");
-    strcpy(embed_options.out, "tests_output/sample_inyectado3.bmp");
+    strcpy(embed_options.in, hidden_file);
+    strcpy(embed_options.p, carrier_file);
+    strcpy(embed_options.out, inyected_file);
     embed_options.stego_type = lsb1;
-    embed_options.encrypted = true;
+    embed_options.encrypted = false;
     embed_options.encription_mode = cbc;
-    embed_options.encription_algorithm = aes256;
+    embed_options.encription_algorithm = aes128;
     strcpy(embed_options.encription_password, "password");
 
     //extract options
     extract_options.operation = extract;
-    strcpy(extract_options.p, "tests_output/sample_inyectado3.bmp");
-    strcpy(extract_options.out, "tests_output/sample_extraido_2.png");
+    strcpy(extract_options.p, inyected_file);
+    strcpy(extract_options.out, output_file);
     extract_options.stego_type = lsb1;
-    extract_options.encrypted = true;
+    extract_options.encrypted = false;
     extract_options.encription_mode = cbc;
-    extract_options.encription_algorithm = aes256;
+    extract_options.encription_algorithm = aes128;
     strcpy(extract_options.encription_password, "password");
 
     _embed(&embed_options);
     _extract(&extract_options);
-    assert_true(filesEqual("tests_output/sample_extraido_2.png", "tests_input/gladiator_chicken.png"));
+    assert_true(filesEqual(output_file, hidden_file));
 
 }
 
