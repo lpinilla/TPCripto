@@ -26,7 +26,6 @@ payload get_payload(struct options *options) {
   } else {
     lsb l;
     if (lsb_type == lsb1) {
-      printf("Creating lsb1\n");
       l = create_lsb(1);
     } else if (lsb_type == lsb4) {
       l = create_lsb(4);
@@ -47,8 +46,6 @@ void _embed(struct options *options) {
   hfs hf = process_hf(options->in);
   uint8_t *in = concat_hf(hf);
   long in_size = sizeof(uint32_t) + hf->size + hf->ext_size;
-  
-  printf("in size: %ld\n", in_size);
   // Paso 2: Encriptar en caso de ser necesario
   if (options->encrypted) {
     ciphertext = malloc(in_size * 2);  // Reserve twice the space just in case
@@ -61,10 +58,7 @@ void _embed(struct options *options) {
     ciphertext[1] = c_size >> 16;
     ciphertext[2] = c_size >> 8;
     ciphertext[3] = c_size;
-    printf("Antes de encryptar, in_size = %ld\n", in_size);
-    printf("Cipher size: %d\n", cipher_size);
     in_size = (long)cipher_size + sizeof(uint32_t);
-    printf("despues de encryptar, in_size = %ld\n", in_size);
   }
   
   if (!copy_file(options->out, options->p)) {
@@ -74,7 +68,6 @@ void _embed(struct options *options) {
   bmp_header bmp_h = bmp_f->header;
   carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes,
                              bmp_h->width_px, bmp_h->height_px);
-
   payload p = create_payload(in, sizeof(uint32_t) + hf->size + hf->ext_size);
   enum stego_types lsb_type = options->stego_type;
   int steg_return;
@@ -92,15 +85,15 @@ void _embed(struct options *options) {
       return;
     }
   }
-  printf("Steg returned: %d\n", steg_return);
-  
-  size_t header_size = sizeof(t_bmp_header);                 
-  uint8_t *output = malloc(c->c_size + header_size);
+  if(steg_return == -1){
+      printf("Payload image too big\n");
+      goto cleanup;
+  }
+  size_t header_size = sizeof(t_bmp_header);
+  uint8_t *output = malloc(bmp_h->size);
   memcpy(output, bmp_h, header_size);
   memcpy(output + header_size, c->content, c->c_size);
-  save_file(output, c->c_size + header_size, options->out);
-  printf("header size: %ld\n", header_size);
-  printf("bmp data size: %d\n", bmp_h->image_size_bytes);
+  save_file(output, bmp_h->size, options->out);
   free(output);
 cleanup:
   // Cleanup
@@ -123,7 +116,7 @@ void _extract(struct options *options) {
     int d =
         decrypt(plaintext, options->encription_password, pl->content, pl->size,
                 options->encription_mode, options->encription_algorithm);
-    size = d - RC4_T - 4;
+    size = d - RC4_T - RC4_E;
     output = plaintext;
     // muy importante el +4 para saltear el tamanio de lo encriptado, el -4 para
     // descontar el tamanio y -5 para extension
