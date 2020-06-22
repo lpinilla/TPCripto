@@ -13,7 +13,7 @@
 
 #define RC4_N 6 //para nuestra implementacion vamos a usar claves de 48bits
 #define RC4_T 4 //tamanio del archivo
-#define RC4_E 5 //tamanio de la exxtension (.png\0)
+#define RC4_E 4 //tamanio de la exxtension (.png\0)
 
 void swap(uint8_t *a, uint8_t *b);
 int KSA(uint8_t *key, uint8_t *S);

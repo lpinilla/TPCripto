@@ -56,7 +56,7 @@ void simple_inyect_extract_test() {
     embed_options.operation = embed;
     strcpy(embed_options.in, "tests_input/gladiator_chicken.png");
     strcpy(embed_options.p, "files_for_testing/sample.bmp");
-    strcpy(embed_options.out, "tests_input/sample_inyectado2.bmp");
+    strcpy(embed_options.out, "tests_output/sample_inyectado2.bmp");
     embed_options.stego_type = lsb1;
     embed_options.encrypted = true;
     embed_options.encription_mode = cbc;
@@ -69,8 +69,8 @@ void simple_inyect_extract_test() {
 //p size = 181824
 //c size = 3275520
     extract_options.operation = extract;
-    strcpy(extract_options.p, "tests_input/sample_inyectado2.bmp");
-    strcpy(extract_options.out, "tests_input/sample_extraido.png");
+    strcpy(extract_options.p, "tests_output/sample_inyectado2.bmp");
+    strcpy(extract_options.out, "tests_output/sample_extraido.png");
     extract_options.stego_type = lsb1;
     extract_options.encrypted = true;
     extract_options.encription_mode = cbc;

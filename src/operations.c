@@ -63,8 +63,7 @@ void _embed(struct options *options) {
     ciphertext[3] = c_size;
     printf("Antes de encryptar, in_size = %ld\n", in_size);
     printf("Cipher size: %d\n", cipher_size);
-    printf("Size of uint32_t: %ld\n", sizeof(uint32_t));
-    in_size = (long)cipher_size + sizeof(uint32_t);  
+    in_size = (long)cipher_size + sizeof(uint32_t);
     printf("despues de encryptar, in_size = %ld\n", in_size);
   }
   
@@ -119,13 +118,12 @@ void _extract(struct options *options) {
   }
   uint8_t *output = pl->content;
   long size = pl->size;
-
   if (options->encrypted) {
     uint8_t *plaintext = malloc(pl->size);
     int d =
         decrypt(plaintext, options->encription_password, pl->content, pl->size,
                 options->encription_mode, options->encription_algorithm);
-    size = d - RC4_T - RC4_E;
+    size = d - RC4_T - 4;
     output = plaintext;
     // muy importante el +4 para saltear el tamanio de lo encriptado, el -4 para
     // descontar el tamanio y -5 para extension
