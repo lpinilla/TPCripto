@@ -1121,7 +1121,10 @@ void inject_lsbi_byte_test(){
     carrier c = create_carrier((uint8_t *) arr, arr_size, 4, 4);
     inject_lsbi_byte(l, c, payload[0], hop);
     inject_lsbi_byte(l, c, payload[1], hop);
-    for(int i = 0; i < arr_size; i++) ret += arr[i] == expected[i];
+    for(int i = 0; i < arr_size; i++){
+        printf("%d ", arr[i]);
+        ret += arr[i] == expected[i];
+    }
     destroy_lsb(l);
     destroy_carrier(c);
     assert_equals(&ret, &arr_size, sizeof(int));
