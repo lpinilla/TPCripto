@@ -181,7 +181,7 @@ int lsb_i_steg(carrier c, payload p)
   uint8_t *encript_size = malloc(4);
   //int size_encrypt;
   uint8_t *encrypt_content = malloc(p->size + sizeof(uint32_t));
-  uint8_t *decrypt_content = malloc(p->size + sizeof(uint32_t));
+  //uint8_t *decrypt_content = malloc(p->size + sizeof(uint32_t));
 
   //agarro la key, osea los primeros 6 bytes del carrier
   uint8_t *rc4_key = malloc(RC4_N); //claves de 48 bits
@@ -201,7 +201,8 @@ int lsb_i_steg(carrier c, payload p)
   // printf("\n");
   //encripto con RC4 el contentsize
   uint8_t *prep_size = malloc(RC4_T);
-  int size = prepare_size_enc(p->size, prep_size);
+  prepare_size_enc(p->size, prep_size);
+  
   // printf("prep size %ld: ",p->size);
   // for (int i = 0; i < 4; i++)
   // {
