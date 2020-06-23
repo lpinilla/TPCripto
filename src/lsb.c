@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include <bmp_header.h>
 
 lsb create_lsb(int n)
 {
@@ -161,13 +162,13 @@ uint8_t get_lsbi_hop(carrier c)
   return (!ret) ? 256 : ret;
 }
 
-void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop)
-{
-  for (int i = 0; i < BYTE_SIZE; i++)
-  {
-    inject_bit(l, c, i_byte, i);
-    c->content += sizeof(uint8_t) * (hop + 1);
-  }
+void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop){
+    for (int i = 0; i < BYTE_SIZE; i++) {
+        inject_bit(l, c, i_byte, i);
+        c->counter--;
+        c->counter += hop;
+        if(c->counter > (c->c_size - 1)) c->counter %= (c->c_size - 1);
+    }
 }
 
 int lsb_i_steg(carrier c, payload p)
@@ -176,11 +177,11 @@ int lsb_i_steg(carrier c, payload p)
 
   payload encrypt_p = malloc(sizeof(t_payload));
 
-  encrypt_p->content = malloc(p->size+4);
+  encrypt_p->content = malloc(p->size+RC4_E+RC4_T);
 
-  uint8_t *encript_size = malloc(4);
+  uint8_t *encript_size = malloc(RC4_T);
   //int size_encrypt;
-  uint8_t *encrypt_content = malloc(p->size + sizeof(uint32_t));
+  //uint8_t *encrypt_content = malloc(p->size + sizeof(uint32_t));
   //uint8_t *decrypt_content = malloc(p->size + sizeof(uint32_t));
 
   //agarro la key, osea los primeros 6 bytes del carrier
@@ -213,7 +214,7 @@ int lsb_i_steg(carrier c, payload p)
   RC4(rc4_key,prep_size,encript_size,RC4_T);
 
   // printf("encrypt size :");
-  // for (int i = 0; i <size; i++)
+  // for (int i = 0; i <4; i++)
   // {
   //   printf("%02x ", encript_size[i]);
   // }
@@ -221,15 +222,25 @@ int lsb_i_steg(carrier c, payload p)
 
 
 
-  //encripto el contenido
-  RC4(rc4_key,p->content, encrypt_p->content, (uint32_t)p->size);
+  //encripto el tamanio||contenido
+  uint8_t* to_encript=malloc(p->size+RC4_E+RC4_T);
+  memcpy(to_encript,prep_size,RC4_T);
+  memcpy(to_encript+RC4_T,p->content,p->size+RC4_E);
+  RC4(rc4_key,to_encript, encrypt_p->content, (uint32_t)p->size+RC4_E+RC4_T);
 
   //concateno
-  memcpy(encrypt_content, encript_size, sizeof(uint32_t));
-  memcpy(encrypt_content + sizeof(uint32_t), encrypt_p->content, p->size);
+  // memcpy(encrypt_content, encript_size, sizeof(uint32_t));
+  // memcpy(encrypt_content + sizeof(uint32_t), encrypt_p->content, p->size);
 
-  encrypt_p->content=encrypt_content;
-  encrypt_p->size=p->size+4;
+  // encrypt_p->content=encrypt_content;
+  encrypt_p->size=hex_to_dec(encript_size, RC4_T);
+
+for(int i = 0; i < 30; i++){
+      printf("%02x ", encrypt_p->content[i]);
+  }
+ // printf("\n");
+  //printf("encript size en p: %ld\n",encrypt_p->size);
+  //printf("ACaA\n");
 
   // FILE *f = fopen("prueba_lsbi_encript", "w");
   // if (f == NULL)
@@ -253,14 +264,17 @@ int lsb_i_steg(carrier c, payload p)
 
   uint8_t hop_value = get_lsbi_hop(c);
   uint8_t byte_to_inject = 0;
+
   long bytes_needed = p->size * (BYTE_SIZE / l->n);
   if (bytes_needed >= c->c_size)
     return -1;
+
   for (long i = 0; i < bytes_needed; i++)
   {
     byte_to_inject = get_next_byte(encrypt_p);
     inject_lsbi_byte(l, c, byte_to_inject, hop_value);
   }
+
   destroy_lsb(l);
   return 0;
 }
@@ -273,7 +287,7 @@ payload extract_payload_lsbi(carrier c)
   uint8_t *rc4_key = malloc(RC4_N); //claves de 48 bits
   memcpy(rc4_key, c->content, KEY_SIZE / BYTE_SIZE);
   uint8_t hop = get_lsbi_hop(c);
-  c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
+   //c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
   payload p = (payload)malloc(sizeof(t_payload));
   uint32_t payload_size_enc = extract_payload_size(l, c, hop);
   uint8_t *prep_size = malloc(RC4_T);
