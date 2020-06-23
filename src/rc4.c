@@ -115,8 +115,8 @@ int prepare_size_enc(uint32_t payload_size, uint8_t *prep_size)
   array[2] = (int)((payload_size >> 8) & 0XFF);
   array[3] = (int)((payload_size & 0XFF));
 
-  memcpy(prep_size, array, T);
-  return 4;
+  memcpy(prep_size, array, RC4_T);
+  return RC4_T;
 }
 
 uint32_t hex_to_dec(uint8_t *payload_size_decript, int size)
