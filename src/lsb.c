@@ -181,12 +181,12 @@ void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop){
         if(c->counter > (c->c_size - 1)){
             c->counter = c->counter % (c->c_size - 1);
         }
-        //printf("%ld \n", c->counter);
     }
 }
 
 int lsb_i_steg(carrier c, payload p){
   if(c == NULL || p == NULL) return 1;
+  //printf("%ld \n", c->c_size);
   lsb l = create_lsb(1);
   //agarro la key, osea los primeros 6 bytes del carrier
   uint8_t *rc4_key = malloc(RC4_N); //claves de 48 bits
@@ -235,7 +235,7 @@ payload extract_payload_lsbi(carrier c){
   uint8_t *rc4_key = malloc(RC4_N); //claves de 48 bits
   memcpy(rc4_key, c->content, KEY_SIZE / BYTE_SIZE);
   uint8_t hop = get_lsbi_hop(c);
-   //c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
+  c->content += sizeof(uint8_t) * 6; //ignorando el byte de la llave
   payload p = (payload)malloc(sizeof(t_payload));
   uint32_t payload_size_enc = extract_payload_size(l, c, hop);
   uint8_t *prep_size = malloc(RC4_T);

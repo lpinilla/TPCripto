@@ -72,7 +72,7 @@ void simple_inyect_extract_test() {
 
     //extract options
     extract_options.operation = extract;
-    strcpy(extract_options.p, inyected_file);
+    strcpy(extract_options.p, carrier_file);
     strcpy(extract_options.out, output_file);
     extract_options.stego_type = lsbi;
     extract_options.encrypted = false;
