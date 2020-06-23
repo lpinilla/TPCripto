@@ -40,7 +40,7 @@ void embed_modifies_file_test() {
     
     embed_options.operation = embed;
     strcpy(embed_options.in, "files_for_testing/lsb1_test.png");
-    strcpy(embed_options.p, "files_for_testing/sample.bmp");
+    strcpy(embed_options.p, "files_for_testing/ladoLSB1.bmp");
     strcpy(embed_options.out, "tests_input/sample_inyectado2.bmp");
     embed_options.stego_type = lsb1;
     embed_options.encrypted = false;
@@ -56,8 +56,8 @@ void simple_inyect_extract_test() {
     char * hidden_file = "files_for_testing/lsbi_extract_test.png";
     char * output_file = "tests_output/lsbi_steg_test.png";
 
-    char * carrier_file = "files_for_testing/test.bmp";
-    char * inyected_file= "tests_output/sample_inyectado_lsbi.bmp";
+    char * carrier_file = "files_for_testing/ladoLSBI_corregido.bmp";
+    char * inyected_file= "tests_output/lsbi_test_inyectado.bmp";
 
     //embed options
     embed_options.operation = embed;
@@ -81,6 +81,7 @@ void simple_inyect_extract_test() {
     //strcpy(extract_options.encription_password, "password");
 
     _embed(&embed_options);
+
     _extract(&extract_options);
     assert_true(filesEqual(output_file, hidden_file));
 

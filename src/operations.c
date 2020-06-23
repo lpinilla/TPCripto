@@ -60,7 +60,6 @@ void _embed(struct options *options) {
     ciphertext[3] = c_size;
     in_size = (long)cipher_size + sizeof(uint32_t);
   }
-  
   if (!copy_file(options->out, options->p)) {
       goto cleanup;
   }
@@ -68,6 +67,7 @@ void _embed(struct options *options) {
   bmp_header bmp_h = bmp_f->header;
   carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes,
                              bmp_h->width_px, bmp_h->height_px);
+  uint8_t * aux_data = c->content;
   payload p = create_payload(in, sizeof(uint32_t) + hf->size + hf->ext_size);
   enum stego_types lsb_type = options->stego_type;
   int steg_return;
@@ -92,7 +92,7 @@ void _embed(struct options *options) {
   size_t header_size = sizeof(t_bmp_header);
   uint8_t *output = malloc(bmp_h->size);
   memcpy(output, bmp_h, header_size);
-  memcpy(output + header_size, c->content, c->c_size);
+  memcpy(output + header_size, aux_data, c->c_size);
   save_file(output, bmp_h->size, options->out);
   free(output);
 cleanup:

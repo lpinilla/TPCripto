@@ -1119,12 +1119,10 @@ void inject_lsbi_byte_test(){
     memset(arr, 0, arr_size);
     lsb l = create_lsb(1);
     carrier c = create_carrier((uint8_t *) arr, arr_size, 4, 4);
+    c->counter = 0;
     inject_lsbi_byte(l, c, payload[0], hop);
     inject_lsbi_byte(l, c, payload[1], hop);
-    for(int i = 0; i < arr_size; i++){
-        printf("%d ", arr[i]);
-        ret += arr[i] == expected[i];
-    }
+    for(int i = 0; i < 16; i++) ret += arr[i] == expected[i];
     destroy_lsb(l);
     destroy_carrier(c);
     assert_equals(&ret, &arr_size, sizeof(int));
@@ -1148,11 +1146,11 @@ void inject_lsbi_byte_test_2(){
     lsb l = create_lsb(1);
     carrier c = create_carrier((uint8_t *) arr, arr_size, 6, 4);
     inject_lsbi_byte(l, c, payload[0], hop);
-    printf("counter : %d \n", c->counter);
+    printf("counter : %ld \n", c->counter);
     inject_lsbi_byte(l, c, payload[1], hop);
-    printf("counter : %d \n", c->counter);
+    printf("counter : %ld \n", c->counter);
     inject_lsbi_byte(l, c, payload[2], hop);
-    printf("counter : %d \n", c->counter);
+    printf("counter : %ld \n", c->counter);
     for(int i = 0; i < arr_size; i++){
         if(i != 0 && i % 4 == 0) printf("\n");
         printf("%d ", arr[i]);

@@ -7,7 +7,7 @@ bmp_file read_bmp(char *file_name) {
 
   fp = fopen(file_name, "rb");
   if (fp == NULL) {
-    printf("File Not Found!\n");
+    printf("%s Not Found!\n", file_name);
     return NULL;
   }
 

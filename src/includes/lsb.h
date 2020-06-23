@@ -70,4 +70,7 @@ uint8_t get_lsbi_hop(carrier c);
 //función para inyectar un byte con lsbi en la imagen portadora dado un numero de saltos hop
 void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop);
 
+
+payload rc4_payload(uint8_t * rc4_key, payload p);
+
 #endif

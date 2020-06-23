@@ -1109,6 +1109,7 @@ void extract_payload_test_3(){
     destroy_payload(p);
     assert_true(ret[0] == 0xe5 && ret[1] == 0x0a);
 }
+<<<<<<< Updated upstream
 
 void inject_lsbi_byte_test(){
     int arr_size = 16;
@@ -1161,3 +1162,58 @@ void inject_lsbi_byte_test_2(){
     printf("%d \n", ret);
     assert_equals(&ret, &arr_size, sizeof(int));
 }
+||||||| merged common ancestors
+=======
+
+void inject_lsbi_byte_test(){
+    int arr_size = 16;
+    uint8_t arr[arr_size];
+    uint8_t payload[2] = {0xff, 0x55};
+    int hop = 2, ret = 0;
+    int expected[16] ={1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1};
+    memset(arr, 0, arr_size);
+    lsb l = create_lsb(1);
+    carrier c = create_carrier((uint8_t *) arr, arr_size, 4, 4);
+    inject_lsbi_byte(l, c, payload[0], hop);
+    inject_lsbi_byte(l, c, payload[1], hop);
+    for(int i = 0; i < arr_size; i++) ret += arr[i] == expected[i];
+    destroy_lsb(l);
+    destroy_carrier(c);
+    assert_equals(&ret, &arr_size, sizeof(int));
+}
+
+//no anda
+void inject_lsbi_byte_test_2(){
+    int arr_size = 24;
+    uint8_t arr[arr_size];
+    uint8_t payload[3] = {0xff, 0x55, 0x3c};
+    int hop = 2, ret = 0;
+    int expected[24] = {
+        1, 0, 1, 0,
+        1, 1, 1, 1,
+        1, 1, 1, 1,
+        1, 0, 1, 0,
+        1, 0, 1, 0,
+        1, 0, 1, 0,
+    };
+    memset(arr, 0, arr_size);
+    lsb l = create_lsb(1);
+    carrier c = create_carrier((uint8_t *) arr, arr_size, 6, 4);
+    inject_lsbi_byte(l, c, payload[0], hop);
+    printf("counter : %ld \n", c->counter);
+    inject_lsbi_byte(l, c, payload[1], hop);
+    printf("counter : %ld \n", c->counter);
+    inject_lsbi_byte(l, c, payload[2], hop);
+    printf("counter : %ld \n", c->counter);
+    for(int i = 0; i < arr_size; i++){
+        if(i != 0 && i % 4 == 0) printf("\n");
+        printf("%d ", arr[i]);
+        ret += arr[i] == expected[i];
+    }
+    printf("\n");
+    destroy_lsb(l);
+    destroy_carrier(c);
+    printf("%d \n", ret);
+    assert_equals(&ret, &arr_size, sizeof(int));
+}
+>>>>>>> Stashed changes

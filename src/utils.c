@@ -10,7 +10,7 @@ int copy_file(char *target_path, char *source_path) {
         return 0;
     }
 
-    target = fopen(target_path, "w");
+    target = fopen(target_path, "w+");
     
     if( target == NULL ) {
         fclose(source);
