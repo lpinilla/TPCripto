@@ -104,7 +104,7 @@ cleanup:
 void _extract(struct options *options) {
   // A tener en cuenta: el tipo payload es un puntero
   payload pl = get_payload(options);
-  
+
   if (pl == 0) {
     printf("Error extracting payload (returned 0)\n");
     return;

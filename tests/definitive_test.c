@@ -56,7 +56,7 @@ void simple_inyect_extract_test() {
     char * hidden_file = "files_for_testing/lsbi_extract_test.png";
     char * output_file = "tests_output/lsbi_steg_test.png";
 
-    char * carrier_file = "files_for_testing/ladoLSBI_corregido.bmp";
+    char * carrier_file = "files_for_testing/ladoLSBI.bmp";
     char * inyected_file= "tests_output/lsbi_test_inyectado.bmp";
 
     //embed options
@@ -72,7 +72,7 @@ void simple_inyect_extract_test() {
 
     //extract options
     extract_options.operation = extract;
-    strcpy(extract_options.p, carrier_file);
+    strcpy(extract_options.p, inyected_file);
     strcpy(extract_options.out, output_file);
     extract_options.stego_type = lsbi;
     extract_options.encrypted = false;

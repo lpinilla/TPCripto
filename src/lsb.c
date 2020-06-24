@@ -172,36 +172,34 @@ uint8_t get_lsbi_hop(carrier c)
 //  return ret;
 //}
 
-void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop){
+void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop, int j){
     for (int i = 0; i < BYTE_SIZE; i++) {
+        c->counter = ((j * BYTE_SIZE + i) * hop) % (c->c_size - 1);
         //printf("%ld \n", c->counter);
         inject_bit(l, c, i_byte, i);
-        c->counter--;
-        c->counter += hop;
-        if(c->counter > (c->c_size - 1)){
-            c->counter = c->counter % (c->c_size - 1);
-        }
     }
 }
 
 int lsb_i_steg(carrier c, payload p){
   if(c == NULL || p == NULL) return 1;
-  //printf("%ld \n", c->c_size);
   lsb l = create_lsb(1);
   //agarro la key, osea los primeros 6 bytes del carrier
   uint8_t *rc4_key = malloc(RC4_N); //claves de 48 bits
   memcpy(rc4_key, c->content, KEY_SIZE / BYTE_SIZE);
   payload rc4_p = rc4_payload(rc4_key, p);
   if(rc4_p == NULL) return 1;
+  //FILE * f = fopen("salida_rc4", "w");
+  //fwrite(rc4_p->content, sizeof(uint8_t), rc4_p->size, f);
+  //fclose(f);
   uint8_t hop_value = get_lsbi_hop(c);
   uint8_t byte_to_inject = 0;
   long bytes_needed = rc4_p->size * BYTE_SIZE;
   if (bytes_needed >= c->c_size) return -1;
   c->content += 6 * sizeof(uint8_t);
-  c->counter = 0;
-  for (long i = 0; i < rc4_p->size; i++){
+  c->counter = rc4_p->counter = 0;
+  for(long i = 0; i < rc4_p->size; i++){
     byte_to_inject = get_next_byte(rc4_p);
-    inject_lsbi_byte(l, c, byte_to_inject, hop_value);
+    inject_lsbi_byte(l, c, byte_to_inject, hop_value, i);
   }
   destroy_lsb(l);
   destroy_payload(rc4_p);
@@ -221,8 +219,8 @@ payload rc4_payload(uint8_t * rc4_key, payload p){
     RC4(rc4_key,prep_size,encript_size,RC4_T);
     //encripto el tamaño||contenido
     uint8_t* to_encript=malloc(p->size+RC4_E+RC4_T);
-    memcpy(to_encript,prep_size,RC4_T);
-    memcpy(to_encript+RC4_T,p->content,p->size+RC4_E);
+    memcpy(to_encript, prep_size, RC4_T);
+    memcpy(to_encript+RC4_T, p->content, p->size+RC4_E);
     RC4(rc4_key,to_encript, encrypt_p->content,(uint32_t)p->size+RC4_E+RC4_T);
     encrypt_p->size = p->size + (RC4_T + RC4_E);
     return encrypt_p;
@@ -245,8 +243,7 @@ payload extract_payload_lsbi(carrier c){
   RC4(rc4_key, prep_size, payload_size_decript, size_rc4);
   //convierto payload_size_decript de hexa a numero decimal
   p->size = hex_to_dec(payload_size_decript, size_rc4);
-  if (p->size >= c->c_size)
-    return NULL;
+  if (p->size >= c->c_size) return NULL;
   p->content = (uint8_t *)malloc(sizeof(uint8_t) * (p->size + 4));
   for (long i = 0; i < p->size + 4; i++)
     p->content[i] = extract_byte_lsbi(l, c, hop, i + 4);
