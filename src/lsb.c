@@ -131,11 +131,10 @@ payload extract_payload(lsb l, carrier c)
 
 int lsb_steg(lsb l, carrier c, payload p)
 {
-  if (l == NULL || c == NULL || p == NULL)
-    return 1;
-  if ((p->size * (BYTE_SIZE / l->n)) >= c->c_size)
-    return -1;
-  jobs total_jobs = divide_jobs(l, c, p, BYTE_INJECTIONS_PER_JOB);
+  if (l == NULL || c == NULL || p == NULL) return 1;
+  if ((p->size * (BYTE_SIZE / l->n)) >= c->c_size) return -1;
+  int n_injections = (p->size < BYTE_INJECTIONS_PER_JOB)? p->size : BYTE_INJECTIONS_PER_JOB;
+  jobs total_jobs = divide_jobs(l, c, p, n_injections);
   pthread_t threads[total_jobs->size];
   routine_args args =
       (routine_args)malloc(sizeof(t_routine_args) * total_jobs->size);
@@ -144,7 +143,7 @@ int lsb_steg(lsb l, carrier c, payload p)
     args[i].l = l;
     args[i].c = (carrier)total_jobs[i].carrier;
     args[i].p = (payload)total_jobs[i].payload;
-    args[i].n_of_pixels = BYTE_INJECTIONS_PER_JOB * BYTE_SIZE / l->n;
+    args[i].n_of_pixels = n_injections * BYTE_SIZE / l->n;
     pthread_create(&threads[i], NULL, worker_sub_routine, (void *)&args[i]);
   }
   for (long i = 0; i < total_jobs->size; i++)
@@ -175,7 +174,7 @@ uint8_t get_lsbi_hop(carrier c)
 void inject_lsbi_byte(lsb l, carrier c, uint8_t i_byte, int hop, int j){
     for (int i = 0; i < BYTE_SIZE; i++) {
         c->counter = ((j * BYTE_SIZE + i) * hop) % (c->c_size - 1);
-        //printf("%ld \n", c->counter);
+        if(j  && !c->counter) c->counter = c->c_size - 1;
         inject_bit(l, c, i_byte, i);
     }
 }

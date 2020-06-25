@@ -17,8 +17,6 @@ void job_division_test_6();
 void job_division_test_7();
 void job_division_test_8();
 void job_division_test_9();
-void job_division_test_10();
-void job_division_test_11();
 
 int main(){
     create_suite("Jobs Suite");
@@ -31,8 +29,6 @@ int main(){
     add_named_test(job_division_test_7, NAME_OFF(job_division_test_7));
     add_named_test(job_division_test_8, NAME_OFF(job_division_test_8));
     add_named_test(job_division_test_9, NAME_OFF(job_division_test_9));
-    add_named_test(job_division_test_10, NAME_OFF(job_division_test_10));
-    add_named_test(job_division_test_11, NAME_OFF(job_division_test_11));
     run_suite();
     clear_suite();
 }
@@ -56,7 +52,7 @@ void job_division_test_2(){
 void job_division_test_3(){
     long size = 16, inj_size = 2;
     long asst = create_test(size, inj_size, 1, size / 2, 2);
-    assert_true(2 == asst);
+    assert_true(1 == asst);
 }
 
 void job_division_test_4(){
@@ -68,7 +64,7 @@ void job_division_test_4(){
 void job_division_test_5(){
     long size = 8, inj_size = 1;
     long asst = create_test(size, inj_size, 1, size / 4, 4);
-    assert_true(4 == asst);
+    assert_true(1 == asst);
 }
 
 void job_division_test_6(){
@@ -109,7 +105,7 @@ void job_division_test_8(){
     payload p = create_payload(inj, inj_size);
     lsb l = create_lsb(1);
     jobs j = divide_jobs(l, c, p, c->pixel_width);
-    asserts += j->size == 2;
+    asserts += j->size == 1;
     asserts += j[0].carrier->content == carr;
     asserts += j[0].payload->content == inj;
     destroy_carrier(c);
@@ -120,30 +116,6 @@ void job_division_test_8(){
 }
 
 void job_division_test_9(){
-    int asserts = 0, j_size = 0;
-    long carrier_size = 16, inj_size = 2;
-    uint8_t carr[carrier_size];
-    uint8_t inj[inj_size];
-    for(int i = 0; i < carrier_size; i++) carr[i] = 0;
-    for(int i = 0; i < inj_size; i++) inj[i] = 0;
-    carrier c = create_carrier(carr, carrier_size, 1, carrier_size);
-    payload p = create_payload(inj, inj_size);
-    lsb l = create_lsb(1);
-    jobs j = divide_jobs(l, c, p, c->pixel_width);
-    j_size = j->size;
-    asserts += j_size == 16;
-    for(int i = 0; i < j->size; i++){
-        asserts += j[i].carrier->content == (carr + i * sizeof(uint8_t));
-        asserts += j[i].payload->content == (inj + i * sizeof(uint8_t));
-    }
-    destroy_carrier(c);
-    destroy_payload(p);
-    destroy_lsb(l);
-    destroy_jobs(j);
-    assert_true(asserts == (2 * j_size+ 1));
-}
-
-void job_division_test_10(){
     int asserts = 0, j_size = 0;
     long carrier_size = 16, inj_size = 2;
     uint8_t carr[carrier_size];
@@ -167,29 +139,6 @@ void job_division_test_10(){
     assert_true(asserts == (2 * j_size + 1));
 }
 
-void job_division_test_11(){
-    int asserts = 0, j_size = 0;
-    long carrier_size = 16, inj_size = 2;
-    uint8_t carr[carrier_size];
-    uint8_t inj[inj_size];
-    for(int i = 0; i < carrier_size; i++) carr[i] = 0;
-    for(int i = 0; i < inj_size; i++) inj[i] = 0;
-    carrier c = create_carrier(carr, carrier_size, 1, carrier_size);
-    payload p = create_payload(inj, inj_size);
-    lsb l = create_lsb(4);
-    jobs j = divide_jobs(l, c, p, c->pixel_width);
-    j_size = j->size;
-    asserts += j_size == 4;
-    for(int i = 0; i < j->size; i++){
-        asserts += j[i].carrier->content == (carr + i * sizeof(uint8_t));
-        asserts += j[i].payload->content == (inj + i * sizeof(uint8_t));
-    }
-    destroy_carrier(c);
-    destroy_payload(p);
-    destroy_lsb(l);
-    destroy_jobs(j);
-    assert_true(asserts == (2 * j_size + 1));
-}
 
 long create_test(long size, long inj_size, int n, long width, long height){
     long ret = 0;

@@ -63,20 +63,13 @@ void rc4_image_test_2()
 
     RC4(key, ciphertext, decrypt, size);
 
-    FILE *g = fopen("test_create_files/salidaRC4_nuestro.png", "w");
+    FILE *g = fopen("tests_output/salidaRC4_nuestro.png", "w");
     if (g == NULL)
     {
         printf("File Not Found!\n");
         return;
     }
 
-    // printf("decript ");
-    // for (int i = 0; i < 6; i++)
-    // {
-    //     printf("%x ", decrypt[i]);
-    // }
-
-    printf("\n");
 
     //fseek(g,,SEEK_SET);
     fwrite(decrypt+4, sizeof(uint8_t), size-8, g);//size-8 para solo copiar el archivo
@@ -109,21 +102,9 @@ void rc4_text_test()
     //encripto
     RC4(key, plaintext, ciphertext, size);
 
-    for (int i = 0, len = size; i < len; i++)
-    {
-        printf("%x ", ciphertext[i]);
-    }
-    printf("\n");
-
     //decripto
     unsigned char *decrypt = malloc(sizeof(int) * size);
     RC4(key, ciphertext, decrypt, size);
-    for (int i = 0, len = size; i < len; i++)
-    {
-        printf("%c ", decrypt[i]);
-    }
-    printf("\n");
-
     if (!memcmp(decrypt, plaintext, size))
     {
         assert_true(1 == 1);

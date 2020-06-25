@@ -80,7 +80,7 @@ void bmp_create_test()
   memcpy(image, bmph, sizeof(t_bmp_header));
   memcpy(image + sizeof(t_bmp_header), bmpf->data, bmph->image_size_bytes);
 
-  FILE *f = fopen("test_create_files/test.bmp", "wb");
+  FILE *f = fopen("tests_output/test.bmp", "wb");
   fwrite(image, sizeof(uint8_t), bmph->size, f);
   fclose(f);
 }

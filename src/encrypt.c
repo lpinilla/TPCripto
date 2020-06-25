@@ -98,7 +98,6 @@ cipherFunction getEncriptionFunctionPtr(enum algorithms alg, enum modes mode) {
     case aes256:
       return getAes256EncriptionFunctionPtr(mode);
     default:
-      // TODO Exception handling
       printf("ERROR: UNKNOWN ALGORITHM");
       abort();
   }

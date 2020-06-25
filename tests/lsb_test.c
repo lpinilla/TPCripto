@@ -36,9 +36,6 @@ void worker_lbs_steg_test_4();
 void worker_lbs_steg_test_5();
 void worker_lbs_steg_test_6();
 void worker_subroutine_test();
-void thread_test();
-void thread_test_2();
-void thread_test_3();
 void lsb_steg_test();
 void lsb_steg_test_2();
 void lsb_steg_test_3();
@@ -57,61 +54,54 @@ void extract_payload_test();
 void extract_payload_test_2();
 void extract_payload_test_3();
 void inject_lsbi_byte_test();
-void inject_lsbi_byte_test_2();
 
 int main() {
   create_suite("LSB suite");
-  //add_test(lsb_creation_test_1);
-  //add_test(lsb_creation_test_4);
-  //add_test(injection_test_1);
-  //add_test(injection_test_2);
-  //add_test(injection_test_3);
-  //add_test(injection_test_4);
-  //add_test(injection_test_5);
-  //add_test(injection_test_6);
-  //add_test(injection_test_7);
-  //add_test(injection_test_8);
-  //add_test(injection_test_9);
-  //add_test(injection_test_10);
-  //add_test(injection_test_11);
-  //add_test(injection_test_12);
-  //add_test(injection_test_13);
-  //add_test(injection_test_14);
-  //add_test(injection_test_15);
-  //add_test(injection_test_16);
-  //add_test(injection_test_17);
-  //add_test(injection_test_18);
-  //add_test(injection_test_19);
-  //add_test(worker_lbs_steg_test_1);
-  //add_test(worker_lbs_steg_test_2);
-  //add_test(worker_lbs_steg_test_3);
-  //add_test(worker_lbs_steg_test_4);
-  //add_test(worker_lbs_steg_test_5);
-  //add_test(worker_lbs_steg_test_6);
-  //add_named_test(worker_subroutine_test,NAME_OFF(worker_subroutine_test));
-  //add_named_test(thread_test,NAME_OFF(thread_test));
-  //add_named_test(thread_test_2,NAME_OFF(thread_test_2));
-  //add_named_test(thread_test_3,NAME_OFF(thread_test_3));
-  //add_named_test(lsb_steg_test, NAME_OFF(lsb_steg_test));
-  //add_named_test(lsb_steg_test_2, NAME_OFF(lsb_steg_test_2));
-  //add_named_test(lsb_steg_test_3, NAME_OFF(lsb_steg_test_3));
-  //add_named_test(lsb_steg_test_4, NAME_OFF(lsb_steg_test_4));
-  //add_named_test(extract_byte_test, NAME_OFF(extract_byte_test));
-  //add_named_test(extract_byte_test_2, NAME_OFF(extract_byte_test_2));
-  //add_named_test(extract_byte_test_3, NAME_OFF(extract_byte_test_3));
-  //add_named_test(extract_byte_test_4, NAME_OFF(extract_byte_test_4));
-  //add_named_test(extract_payload_size_test, NAME_OFF(extract_payload_size_test));
-  //add_named_test(extract_payload_size_test_2, NAME_OFF(extract_payload_size_test_2));
-  //add_named_test(extract_payload_size_test_3, NAME_OFF(extract_payload_size_test_3));
-  //add_named_test(extract_payload_size_test_4, NAME_OFF(extract_payload_size_test_4));
-  //add_named_test(extract_payload_size_test_5, NAME_OFF(extract_payload_size_test_5));
-  //add_named_test(extract_payload_test, NAME_OFF(extract_payload_test));
-  //add_named_test(extract_payload_test_2, NAME_OFF(extract_payload_test_2));
-  //add_named_test(extract_payload_test_3, NAME_OFF(extract_payload_test_3));
-    add_named_test(inject_lsbi_byte_test, NAME_OFF(inject_lsbi_byte_test));
-
-    //add_named_test(inject_lsbi_byte_test_2, NAME_OFF(inject_lsbi_byte_test_2));
-
+  add_test(lsb_creation_test_1);
+  add_test(lsb_creation_test_4);
+  add_test(injection_test_1);
+  add_test(injection_test_2);
+  add_test(injection_test_3);
+  add_test(injection_test_4);
+  add_test(injection_test_5);
+  add_test(injection_test_6);
+  add_test(injection_test_7);
+  add_test(injection_test_8);
+  add_test(injection_test_9);
+  add_test(injection_test_10);
+  add_test(injection_test_11);
+  add_test(injection_test_12);
+  add_test(injection_test_13);
+  add_test(injection_test_14);
+  add_test(injection_test_15);
+  add_test(injection_test_16);
+  add_test(injection_test_17);
+  add_test(injection_test_18);
+  add_test(injection_test_19);
+  add_test(worker_lbs_steg_test_1);
+  add_test(worker_lbs_steg_test_2);
+  add_test(worker_lbs_steg_test_3);
+  add_test(worker_lbs_steg_test_4);
+  add_test(worker_lbs_steg_test_5);
+  add_test(worker_lbs_steg_test_6);
+  add_named_test(worker_subroutine_test,NAME_OFF(worker_subroutine_test));
+  add_named_test(lsb_steg_test, NAME_OFF(lsb_steg_test));
+  add_named_test(lsb_steg_test_2, NAME_OFF(lsb_steg_test_2));
+  add_named_test(lsb_steg_test_3, NAME_OFF(lsb_steg_test_3));
+  add_named_test(lsb_steg_test_4, NAME_OFF(lsb_steg_test_4));
+  add_named_test(extract_byte_test, NAME_OFF(extract_byte_test));
+  add_named_test(extract_byte_test_2, NAME_OFF(extract_byte_test_2));
+  add_named_test(extract_byte_test_3, NAME_OFF(extract_byte_test_3));
+  add_named_test(extract_byte_test_4, NAME_OFF(extract_byte_test_4));
+  add_named_test(extract_payload_size_test, NAME_OFF(extract_payload_size_test));
+  add_named_test(extract_payload_size_test_2, NAME_OFF(extract_payload_size_test_2));
+  add_named_test(extract_payload_size_test_3, NAME_OFF(extract_payload_size_test_3));
+  add_named_test(extract_payload_size_test_4, NAME_OFF(extract_payload_size_test_4));
+  add_named_test(extract_payload_size_test_5, NAME_OFF(extract_payload_size_test_5));
+  add_named_test(extract_payload_test, NAME_OFF(extract_payload_test));
+  add_named_test(extract_payload_test_2, NAME_OFF(extract_payload_test_2));
+  add_named_test(extract_payload_test_3, NAME_OFF(extract_payload_test_3));
+  add_named_test(inject_lsbi_byte_test, NAME_OFF(inject_lsbi_byte_test));
   run_suite();
   clear_suite();
 }
@@ -647,109 +637,6 @@ void worker_subroutine_test(){
     assert_true(ret == inj_size * 8);
 }
 
-void thread_test(){
-    int carr_size = 8, inj_size = 1, ret = 0;
-    uint8_t carr[carr_size], injection[inj_size];
-    pthread_t main_thread;
-    for(int i = 0; i < carr_size; i++) carr[i] = 0;
-    injection[0] = 0xaa;
-    lsb l = create_lsb(1);
-    carrier c = create_carrier( (uint8_t *)carr, carr_size, carr_size, 1);
-    payload p = create_payload(injection, inj_size);
-    t_routine_args args = { .l = l, .c = c, .p = p, .n_of_pixels = c->pixel_width };
-    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args);
-    pthread_join(main_thread, NULL);
-    ret += carr[0] == 0x1;
-    ret += carr[1] == 0x0;
-    ret += carr[2] == 0x1;
-    ret += carr[3] == 0x0;
-    ret += carr[4] == 0x1;
-    ret += carr[5] == 0x0;
-    ret += carr[6] == 0x1;
-    ret += carr[7] == 0x0;
-    destroy_lsb(l);
-    destroy_carrier(c);
-    destroy_payload(p);
-    assert_true(ret == inj_size * 8);
-}
-
-void thread_test_2(){ //FIXME
-    int carr_size = 8, inj_size = 1, ret = 0;
-    uint8_t carr[carr_size], injection[inj_size];
-    pthread_t main_thread;
-    for(int i = 0; i < carr_size; i++) carr[i] = 0;
-    injection[0] = 0xaa;
-    lsb l = create_lsb(1);
-    lsb l2 = create_lsb(1);
-    carrier c = create_carrier((uint8_t *)carr, carr_size, carr_size / 2, 1);
-    carrier c2 = create_carrier((uint8_t *)carr + sizeof(uint8_t) * carr_size / 2, carr_size, carr_size / 2, 1);
-    payload p = create_payload(injection, inj_size);
-    payload p2 = create_payload(injection + sizeof(uint8_t) * inj_size / 2 , inj_size);
-    t_routine_args args = { .l = l, .c = c, .p = p, .n_of_pixels = c->pixel_width };
-    t_routine_args args2 = { .l = l2, .c = c2, .p = p2, .n_of_pixels = c->pixel_width};
-    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args);
-    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args2);
-    pthread_join(main_thread, NULL);
-    ret += carr[0] == 0x1;
-    ret += carr[1] == 0x0;
-    ret += carr[2] == 0x1;
-    ret += carr[3] == 0x0;
-    ret += carr[4] == 0x1;
-    ret += carr[5] == 0x0;
-    ret += carr[6] == 0x1;
-    ret += carr[7] == 0x0;
-    destroy_lsb(l);
-    destroy_carrier(c);
-    destroy_payload(p);
-    destroy_lsb(l2);
-    destroy_carrier(c2);
-    destroy_payload(p2);
-    assert_true(ret == carr_size);
-}
-
-void thread_test_3(){
-    int carr_size = 16, inj_size = 2, ret = 0;
-    uint8_t carr[carr_size], injection[inj_size];
-    pthread_t main_thread;
-    for(int i = 0; i < carr_size; i++) carr[i] = 0;
-    injection[0] = 0x97;
-    injection[1] = 0x31;
-    lsb l = create_lsb(1);
-    lsb l2 = create_lsb(1);
-    carrier c = create_carrier((uint8_t *)carr, carr_size / 2, carr_size / 2, 1);
-    carrier c2 = create_carrier((uint8_t *)carr + sizeof(uint8_t) * carr_size /2, carr_size / 2, carr_size/2, 1);
-    payload p = create_payload(injection, inj_size);
-    payload p2 = create_payload(injection + sizeof(uint8_t) * inj_size / 2 , inj_size);
-    t_routine_args args = { .l = l, .c = c, .p = p, .n_of_pixels = c->pixel_width };
-    t_routine_args args2 = { .l = l2, .c = c2, .p = p2, .n_of_pixels = c->pixel_width};
-    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args);
-    pthread_create(&main_thread, NULL, worker_sub_routine, (void *) &args2);
-    pthread_join(main_thread, NULL);
-    ret += carr[0] == 0x1;
-    ret += carr[1] == 0x0;
-    ret += carr[2] == 0x0;
-    ret += carr[3] == 0x1;
-    ret += carr[4] == 0x0;
-    ret += carr[5] == 0x1;
-    ret += carr[6] == 0x1;
-    ret += carr[7] == 0x1;
-    ret += carr[8] == 0x0;
-    ret += carr[9] == 0x0;
-    ret += carr[10] == 0x1;
-    ret += carr[11] == 0x1;
-    ret += carr[12] == 0x0;
-    ret += carr[13] == 0x0;
-    ret += carr[14] == 0x0;
-    ret += carr[15] == 0x1;
-    destroy_lsb(l);
-    destroy_carrier(c);
-    destroy_payload(p);
-    destroy_lsb(l2);
-    destroy_carrier(c2);
-    destroy_payload(p2);
-    assert_true(ret == carr_size);
-}
-
 void lsb_steg_test(){
     int carr_size = 24, inj_size = 2, ret = 0;
     uint8_t carr[carr_size], injection[inj_size];
@@ -1020,10 +907,6 @@ void extract_payload_size_test_5(){
     carr[28] = 1;
     carr[29] = 1;
     carr[30] = 1;
-    for(int i = 0; i < carr_size; i++){
-        printf("%d ", carr[i]);
-    }
-    printf("\n");
     ret = extract_payload_size(l, c, 0);
     destroy_lsb(l);
     destroy_carrier(c);
@@ -1120,45 +1003,10 @@ void inject_lsbi_byte_test(){
     lsb l = create_lsb(1);
     carrier c = create_carrier((uint8_t *) arr, arr_size, 4, 4);
     c->counter = 0;
-    inject_lsbi_byte(l, c, payload[0], hop);
-    inject_lsbi_byte(l, c, payload[1], hop);
+    inject_lsbi_byte(l, c, payload[0], hop, 0);
+    inject_lsbi_byte(l, c, payload[1], hop, 1);
     for(int i = 0; i < 16; i++) ret += arr[i] == expected[i];
     destroy_lsb(l);
     destroy_carrier(c);
-    assert_equals(&ret, &arr_size, sizeof(int));
-}
-
-//no anda
-void inject_lsbi_byte_test_2(){
-    int arr_size = 24;
-    uint8_t arr[arr_size];
-    uint8_t payload[3] = {0xff, 0x55, 0x3c};
-    int hop = 2, ret = 0;
-    int expected[24] = {
-        1, 0, 1, 0,
-        1, 1, 1, 1,
-        1, 1, 1, 1,
-        1, 0, 1, 0,
-        1, 0, 1, 0,
-        1, 0, 1, 0,
-    };
-    memset(arr, 0, arr_size);
-    lsb l = create_lsb(1);
-    carrier c = create_carrier((uint8_t *) arr, arr_size, 6, 4);
-    inject_lsbi_byte(l, c, payload[0], hop);
-    printf("counter : %ld \n", c->counter);
-    inject_lsbi_byte(l, c, payload[1], hop);
-    printf("counter : %ld \n", c->counter);
-    inject_lsbi_byte(l, c, payload[2], hop);
-    printf("counter : %ld \n", c->counter);
-    for(int i = 0; i < arr_size; i++){
-        if(i != 0 && i % 4 == 0) printf("\n");
-        printf("%d ", arr[i]);
-        ret += arr[i] == expected[i];
-    }
-    printf("\n");
-    destroy_lsb(l);
-    destroy_carrier(c);
-    printf("%d \n", ret);
     assert_equals(&ret, &arr_size, sizeof(int));
 }
