@@ -1,14 +1,6 @@
 
 \.vscode/settings\.json
 
-src/\.objs/bmp_header\.o
-
-src/\.objs/carrier\.o
-
-src/\.objs/encrypt\.o
-
-src/\.objs/
-
 *.tasty
 
 *.bin
