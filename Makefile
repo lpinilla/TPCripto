@@ -3,6 +3,7 @@ all:
 	cd src;make; cd ..
 	@echo "\e[34m[Compiling tests]\e[0m"
 	cd tests; make; cd ..
+	mkdir bin
 	@cp src/stegobmp bin/stegobmp
 	@echo "\e[34m[binary generated at /bin]\e[0m"
 
