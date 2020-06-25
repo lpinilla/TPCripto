@@ -51,10 +51,11 @@ void lsb1_insert_image_1()
     lsb_steg(l, c, p);
     payload p1 = extract_payload(l, c);
 
-    FILE *f = fopen("tests_output/lbs1_insert_original.png", "w");
+    char *file_path = "tests_output/lbs1_insert_original.png";
+    FILE *f = fopen(file_path, "w");
     if (f == NULL)
     {
-        printf("File Not Found!\n");
+        printf("File Not Found! %s\n", file_path);
         return;
     }
     fwrite(p1->content, sizeof(uint8_t), p1->size, f);
@@ -103,9 +104,10 @@ void lsb1_insert_0(){
     int status = lsb_steg(l, c, p);
     if(status == 0){
         payload p1 = extract_payload(l, c);
-        FILE *f = fopen("tests_output/lbs1_insert_text1.txt", "w+");
+        char *file_path = "tests_output/lbs1_insert_text1.txt";
+        FILE *f = fopen(file_path, "w+");
         if (f == NULL) {
-            printf("File Not Found!\n");
+            printf("File Not Found! %s\n", file_path);
             return;
         }
         fwrite(p1->content, sizeof(uint8_t), p1->size, f);

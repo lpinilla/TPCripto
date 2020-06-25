@@ -25,17 +25,19 @@ void rc4_image_test_2()
 
     uint8_t *ciphertext = malloc(size);
 
-    FILE *f = fopen("files_for_testing/salidaRC4", "rb");
+    char *file_name = "files_for_testing/salidaRC4";
+    FILE *f = fopen(file_name, "rb");
     if (f == NULL)
     {
-        printf("File Not Found!\n");
+        printf("File Not Found! %s\n ", file_name);
         return;
     }
 
-    FILE *h = fopen("files_for_testing/ladoLSBI_corregido.bmp", "rb");
+    char *file_name2 = "files_for_testing/ladoLSBI_corregido.bmp";
+    FILE *h = fopen(file_name2, "rb");
     if (h == NULL)
     {
-        printf("File Not Found!\n");
+        printf("File Not Found! %s\n", file_name2);
         return;
     }
     fseek(h, 54, SEEK_SET);
@@ -63,10 +65,12 @@ void rc4_image_test_2()
 
     RC4(key, ciphertext, decrypt, size);
 
-    FILE *g = fopen("tests_output/salidaRC4_nuestro.png", "w");
+
+    char * file_name3 = "tests_output/salidaRC4_nuestro.png";
+    FILE *g = fopen(file_name3, "w");
     if (g == NULL)
     {
-        printf("File Not Found!\n");
+        printf("File Not Found! %s\n", file_name3);
         return;
     }
 

@@ -28,7 +28,7 @@ void store_file(char file_name[], hfs hfs) {
 
   // checking if the file exist or not
   if (fp == NULL) {
-    printf("File Not Found!\n");
+    printf("File Not Found! %s\n", file_name);
     return;
   }
 
@@ -67,7 +67,7 @@ uint32_t file_size(char file_name[]) {
 
   // checking if the file exist or not
   if (fp == NULL) {
-    printf("File Not Found!\n");
+    printf("File Not Found!%s\n", file_name);
     return -1;
   }
 
