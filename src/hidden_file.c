@@ -98,7 +98,6 @@ uint8_t *concat_hf(hfs hf_info) {
   memcpy(rta + sizeof(uint32_t), hf_info->file, hf_info->size);
   memcpy(rta + sizeof(uint32_t) + hf_info->size, hf_info->ext,
          hf_info->ext_size + 1);
-
   return rta;
 }
 

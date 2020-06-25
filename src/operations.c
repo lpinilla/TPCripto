@@ -59,6 +59,7 @@ void _embed(struct options *options) {
     ciphertext[2] = c_size >> 8;
     ciphertext[3] = c_size;
     in_size = (long)cipher_size + sizeof(uint32_t);
+    
   }
   if (!copy_file(options->out, options->p)) {
       goto cleanup;
@@ -68,7 +69,7 @@ void _embed(struct options *options) {
   carrier c = create_carrier(bmp_f->data, bmp_h->image_size_bytes,
                              bmp_h->width_px, bmp_h->height_px);
   uint8_t * aux_data = c->content;
-  payload p = create_payload(in, sizeof(uint32_t) + hf->size + hf->ext_size);
+  payload p = create_payload(in, in_size);
   enum stego_types lsb_type = options->stego_type;
   int steg_return;
   if (lsb_type == lsbi) {
@@ -113,8 +114,10 @@ void _extract(struct options *options) {
   long size = pl->size;
   if (options->encrypted) {
     uint8_t *plaintext = malloc(pl->size);
+    uint32_t cipher_size = pl->size;
+    if (options->stego_type == lsbi) cipher_size += 4;
     int d =
-        decrypt(plaintext, options->encription_password, pl->content, pl->size,
+        decrypt(plaintext, options->encription_password, pl->content, cipher_size,
                 options->encription_mode, options->encription_algorithm);
     size = d - RC4_T - RC4_E;
     output = plaintext;
